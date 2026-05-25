@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Session Middleware
 // ==============================
 app.use(session({
-    secret: "stayez_secret_123",
+    secret: "househop_secret_123",
     resave: false,
     saveUninitialized: true
 }));
@@ -20,7 +20,7 @@ app.use(session({
 // ==============================
 // MongoDB Connection
 // ==============================
-mongoose.connect("mongodb://127.0.0.1:27017/stayezDB")
+mongoose.connect("mongodb://127.0.0.1:27017/househopDB")
     .then(() => console.log("MongoDB Connected"))
     .catch(err => console.log(err));
 
@@ -350,5 +350,5 @@ app.get("/*splat", (req, res) => {
 
 
 app.listen(3000, () => {
-    console.log("StayEZ running on http://localhost:3000");
+    console.log("HouseHop running on http://localhost:3000");
 });
