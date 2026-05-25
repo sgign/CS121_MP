@@ -45,8 +45,10 @@
                 <textarea id="description" placeholder="Describe your listing..."></textarea>
             </div>
             <div class="input-group">
-                <label>Image URL</label>
-                <input id="image" placeholder="https://example.com/image.jpg">
+                <label>Upload Photos (or URL)</label>
+                <input id="image" placeholder="https://..." style="margin-bottom: 5px;">
+                <input id="imageFile" type="file" multiple accept="image/*" onchange="previewImage(event)" style="font-size: 12px; margin-bottom: 5px;">
+                <div id="imageGallery" style="display:flex; flex-wrap:wrap; gap:10px; margin-top: 10px;"></div>
             </div>
             <div class="input-group">
                 <label>Contact Number</label>
@@ -59,14 +61,49 @@
     </main>
 
     <script>
+        let uploadedImageUrls = [];
+
+        function previewImage(event) {
+            const files = Array.from(event.target.files);
+            const gallery = document.getElementById('imageGallery');
+            gallery.innerHTML = '';
+            uploadedImageUrls = [];
+            
+            if (files.length > 0) {
+                document.getElementById('image').value = ""; // Clear URL if files uploaded
+            }
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const dataUrl = e.target.result;
+                    uploadedImageUrls.push(dataUrl);
+                    const img = document.createElement('img');
+                    img.src = dataUrl;
+                    img.style.width = '80px';
+                    img.style.height = '80px';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '4px';
+                    gallery.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
         async function createListing() {
+            let finalImages = [...uploadedImageUrls];
+            if (finalImages.length === 0 && document.getElementById("image").value) {
+                finalImages.push(document.getElementById("image").value);
+            }
+            
             const data = {
                 name: document.getElementById("name").value,
                 type: document.getElementById("type").value,
                 location: document.getElementById("location").value,
                 price: parseFloat(document.getElementById("price").value),
                 description: document.getElementById("description").value,
-                image: document.getElementById("image").value,
+                images: finalImages,
+                image: finalImages.length > 0 ? finalImages[0] : "", // fallback for single image
                 contactNumber: document.getElementById("contactNumber").value,
             };
 

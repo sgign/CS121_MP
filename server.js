@@ -5,7 +5,7 @@ const path = require("path");
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // ==============================
@@ -37,6 +37,7 @@ const listingSchema = new mongoose.Schema({
     price: { type: Number, required: true },
     description: { type: String },
     image: { type: String },
+    images: [{ type: String }],
     hostId: { type: String, required: true },
     contactNumber: { type: String, required: true },
     createdAt: { type: Date, default: Date.now }

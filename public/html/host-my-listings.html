@@ -71,8 +71,10 @@
                 <div class="modal-field">
                     <label>Contact Number</label>
                     <input id="modalContact" placeholder="e.g. 09171234567">
-                    <label style="margin-top:15px;">Image URL</label>
-                    <input id="modalImage" placeholder="https://...">
+                    <label style="margin-top:15px;">Upload Photos (or URL)</label>
+                    <input id="modalImage" placeholder="https://..." style="margin-bottom: 5px;">
+                    <input id="modalImageFile" type="file" multiple accept="image/*" onchange="previewModalImage(event)" style="font-size: 12px; margin-bottom: 5px;">
+                    <div id="modalImageGallery" style="display:flex; flex-wrap:wrap; gap:10px; margin-top: 5px;"></div>
                 </div>
             </div>
 
@@ -85,6 +87,34 @@
 
     <script>
         let editingId = null;
+        let uploadedImageUrls = [];
+
+        function previewModalImage(event) {
+            const files = Array.from(event.target.files);
+            const gallery = document.getElementById('modalImageGallery');
+            gallery.innerHTML = '';
+            uploadedImageUrls = [];
+            
+            if (files.length > 0) {
+                document.getElementById('modalImage').value = ""; // Clear URL if files uploaded
+            }
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const dataUrl = e.target.result;
+                    uploadedImageUrls.push(dataUrl);
+                    const img = document.createElement('img');
+                    img.src = dataUrl;
+                    img.style.width = '80px';
+                    img.style.height = '80px';
+                    img.style.objectFit = 'cover';
+                    img.style.borderRadius = '4px';
+                    gallery.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
 
         async function loadMyListings() {
             const search = document.getElementById("searchListings").value.toLowerCase();
@@ -124,7 +154,7 @@
                 card.className = "listing-card";
                 card.innerHTML = `
                     ${hasPending ? `<div class="pending-badge">PENDING REQUESTS</div>` : ""}
-                    <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
+                    <img src="${(l.images && l.images.length > 0) ? l.images[0] : (l.image || '/images/placeholder.png')}" alt="${l.name}">
                     <div class="listing-card-info">
                         <h3>${l.name}</h3>
                         <p>${typeLabels[l.type] || l.type} - ${l.location}</p>
@@ -142,6 +172,7 @@
 
         function openModal() {
             editingId = null;
+            uploadedImageUrl = "";
             document.getElementById("modalTitle").textContent = "New Listing";
             document.getElementById("modalName").value = "";
             document.getElementById("modalLocation").value = "";
@@ -150,12 +181,15 @@
             document.getElementById("modalDescription").value = "";
             document.getElementById("modalContact").value = "";
             document.getElementById("modalImage").value = "";
+            document.getElementById("modalImageFile").value = "";
+            document.getElementById("modalImageGallery").innerHTML = "";
             document.getElementById("modalMsg").textContent = "";
             document.getElementById("listingModal").style.display = "flex";
         }
 
         function openEdit(listing) {
             editingId = listing._id;
+            uploadedImageUrl = "";
             document.getElementById("modalTitle").textContent = "Edit Listing";
             document.getElementById("modalName").value = listing.name;
             document.getElementById("modalLocation").value = listing.location;
@@ -164,6 +198,22 @@
             document.getElementById("modalDescription").value = listing.description || "";
             document.getElementById("modalContact").value = listing.contactNumber;
             document.getElementById("modalImage").value = listing.image || "";
+            document.getElementById("modalImageFile").value = "";
+            
+            const gallery = document.getElementById("modalImageGallery");
+            gallery.innerHTML = "";
+            let editImages = listing.images && listing.images.length > 0 ? listing.images : (listing.image ? [listing.image] : []);
+            uploadedImageUrls = [...editImages];
+            
+            editImages.forEach(imgUrl => {
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                img.style.width = '80px';
+                img.style.height = '80px';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '4px';
+                gallery.appendChild(img);
+            });
             document.getElementById("modalMsg").textContent = "";
             document.getElementById("listingModal").style.display = "flex";
         }
@@ -173,6 +223,11 @@
         }
 
         async function submitListing() {
+            let finalImages = [...uploadedImageUrls];
+            if (finalImages.length === 0 && document.getElementById("modalImage").value) {
+                finalImages.push(document.getElementById("modalImage").value);
+            }
+            
             const data = {
                 name: document.getElementById("modalName").value,
                 location: document.getElementById("modalLocation").value,
@@ -180,7 +235,8 @@
                 type: document.getElementById("modalType").value,
                 description: document.getElementById("modalDescription").value,
                 contactNumber: document.getElementById("modalContact").value,
-                image: document.getElementById("modalImage").value,
+                images: finalImages,
+                image: finalImages.length > 0 ? finalImages[0] : "",
             };
 
             const msg = document.getElementById("modalMsg");

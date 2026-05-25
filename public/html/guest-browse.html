@@ -38,9 +38,8 @@
 
                 <div id="filterDropdown" class="filter-dropdown" style="display:none;">
                     <div class="filter-group">
-                        <label>Type</label>
                         <select id="type" onchange="loadListings()">
-                            <option value="">All Types</option>
+                            <option value="">Type</option>
                             <option value="hotel">Hotel</option>
                             <option value="apartment">Apartment</option>
                             <option value="dorm">Dorm</option>
@@ -48,9 +47,8 @@
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label>Price</label>
                         <select id="sort" onchange="loadListings()">
-                            <option value="">Sort by Price</option>
+                            <option value="">Price</option>
                             <option value="price_asc">Price: Low to High</option>
                             <option value="price_desc">Price: High to Low</option>
                         </select>
@@ -66,7 +64,14 @@
     <script>
         function toggleFilters() {
             const dropdown = document.getElementById('filterDropdown');
-            dropdown.style.display = dropdown.style.display === 'none' ? 'flex' : 'none';
+            const btn = document.querySelector('.btn-filters');
+            if (dropdown.style.display === 'none') {
+                dropdown.style.display = 'flex';
+                btn.classList.add('active');
+            } else {
+                dropdown.style.display = 'none';
+                btn.classList.remove('active');
+            }
         }
 
         async function loadListings() {

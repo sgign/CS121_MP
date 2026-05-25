@@ -2,62 +2,93 @@
 <html>
 <head>
     <title>HouseHop - Book Listing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Luckiest+Guy&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body id="bookingPage">
-    <header>
-        <h2>HouseHop</h2>
-        <nav>
+    <header class="main-header">
+        <img src="/images/logo.png" alt="HouseHop" class="header-logo">
+        <nav class="main-nav">
             <a href="/browse">Browse</a>
             <a href="/my-bookings">My Bookings</a>
             <a href="/logout">Logout</a>
         </nav>
     </header>
 
-    <main>
-        <h1>Book Listing</h1>
-
-        <!-- Listing details loaded here -->
-        <div id="listingDetail"></div>
-
-        <!-- Booking form -->
-        <div class="booking-form">
-            <h2>Select Dates</h2>
-            <div class="input-group">
-                <label>Start Date</label>
-                <input type="date" id="startDate">
+    <main class="booking-main">
+        <div class="booking-container">
+            <!-- Left Side: Images -->
+            <div class="booking-left">
+                <img id="mainImage" src="/images/placeholder.png" alt="Main Listing Image" class="main-image">
+                <div class="thumbnail-row">
+                    <img class="thumbnail" src="/images/placeholder.png">
+                    <img class="thumbnail" src="/images/placeholder.png">
+                    <img class="thumbnail" src="/images/placeholder.png">
+                    <img class="thumbnail" src="/images/placeholder.png">
+                    <img class="thumbnail" src="/images/placeholder.png">
+                </div>
             </div>
-            <div class="input-group">
-                <label>End Date</label>
-                <input type="date" id="endDate">
+
+            <!-- Right Side: Details & Booking -->
+            <div class="booking-right">
+                <h1 id="listingTitle">Loading...</h1>
+                
+
+                
+                <p id="listingDesc" class="desc">Loading description...</p>
+                <p class="price"><strong id="listingPrice">...</strong> for x nights</p>
+                
+                <div class="booking-form-inline">
+                    <div class="date-inputs">
+                        <div class="input-group">
+                            <label>Start Date</label>
+                            <input type="date" id="startDate">
+                        </div>
+                        <div class="input-group">
+                            <label>End Date</label>
+                            <input type="date" id="endDate">
+                        </div>
+                    </div>
+                    <button class="blue-confirm-btn" onclick="submitBooking()">CONFIRM BOOKING</button>
+                    <p id="bookingMsg"></p>
+                </div>
             </div>
-            <button onclick="submitBooking()">CONFIRM BOOKING</button>
-            <p id="bookingMsg"></p>
         </div>
     </main>
 
     <script>
-        // Get listing ID from URL
         const listingId = window.location.pathname.split("/").pop();
 
         async function loadListing() {
             const res = await fetch("/listings/" + listingId);
             const l = await res.json();
 
-            const typeLabels = {
-                hotel: "Hotel",
-                apartment: "Apartment",
-                dorm: "Dorm",
-                guest_room: "Guest Room"
-            };
+            let images = [];
+            if (l.images && l.images.length > 0) {
+                images = l.images;
+            } else if (l.image) {
+                images = [l.image];
+            } else {
+                images = ['/images/placeholder.png'];
+            }
+            
+            document.getElementById("mainImage").src = images[0];
+            
+            // Populate thumbnails cycling through available images
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            let thumbIndex = 1; // start from 2nd image if available
+            thumbnails.forEach((img) => {
+                const srcImg = images[thumbIndex % images.length];
+                img.src = srcImg;
+                thumbIndex++;
+            });
 
-            document.getElementById("listingDetail").innerHTML = `
-                <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
-                <h2>${l.name}</h2>
-                <p>${typeLabels[l.type] || l.type} — ${l.location}</p>
-                <p><strong>₱${l.price}/night</strong></p>
-                <p>${l.description || ""}</p>
-            `;
+            document.getElementById("listingTitle").textContent = l.name;
+            
+            const dummyDesc = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+            document.getElementById("listingDesc").textContent = l.description || dummyDesc;
+            
+            document.getElementById("listingPrice").textContent = l.price.toLocaleString();
         }
 
         async function submitBooking() {
