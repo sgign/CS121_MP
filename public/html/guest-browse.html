@@ -3,43 +3,71 @@
 
 <head>
     <title>HouseHop - Browse Listings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body id="browsePage">
-    <header>
-        <h2> HouseHop </h2>
-        <nav>
+    <header class="main-header">
+        <img src="/images/logo.png" alt="HouseHop" class="header-logo">
+        <nav class="main-nav">
             <a href="/browse">Browse</a>
             <a href="/my-bookings">My Bookings</a>
             <a href="/logout">Logout</a>
         </nav>
     </header>
 
-    <main>
-        <h1>Browse Listings</h1>
-
-        <div class="controls">
-            <input id="search" placeholder="Search by name" oninput="loadListings()">
-            <input id="location" placeholder="Filter by location" oninput="loadListings()">
-            <select id="type" onchange="loadListings()">
-                <option value="">All Types</option>
-                <option value="hotel">Hotel</option>
-                <option value="apartment">Apartment</option>
-                <option value="dorm">Dorm</option>
-                <option value="guest_room">Guest Room</option>
-            </select>
-            <select id="sort" onchange="loadListings()">
-                <option value="">Sort by Price</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
-            </select>
+    <main class="browse-main">
+        <div class="browse-hero">
+            <img src="/images/browse-listings.png" alt="Browse Listings" class="browse-listings-img">
+            <p>Where we hopping to today?</p>
         </div>
 
-        <div id="listingsGrid"></div>
+        <div class="controls browse-controls">
+            <input id="search" placeholder="Search by name" oninput="loadListings()">
+            <input id="location" placeholder="Location" oninput="loadListings()">
+            <input id="date" type="text" placeholder="Date" onfocus="(this.type='date')"
+                onblur="(this.value==''?this.type='text':this.type='date')">
+            <div class="filters-container" style="position: relative;">
+                <button class="btn-filters" onclick="toggleFilters()">
+                    <img src="/images/filter-icon.png" alt="Filter" style="width: 24px; height: 24px; object-fit: contain;">
+                    FILTERS
+                </button>
+                
+                <div id="filterDropdown" class="filter-dropdown" style="display:none;">
+                    <div class="filter-group">
+                        <label>Type</label>
+                        <select id="type" onchange="loadListings()">
+                            <option value="">All Types</option>
+                            <option value="hotel">Hotel</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="dorm">Dorm</option>
+                            <option value="guest_room">Guest Room</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Price</label>
+                        <select id="sort" onchange="loadListings()">
+                            <option value="">Sort by Price</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">Popular Homes</h2>
+        <div id="listingsGrid" class="browse-grid"></div>
     </main>
 
     <script>
+        function toggleFilters() {
+            const dropdown = document.getElementById('filterDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'flex' : 'none';
+        }
+
         async function loadListings() {
             const search = document.getElementById("search").value;
             const location = document.getElementById("location").value;
@@ -65,14 +93,21 @@
 
             listings.forEach(l => {
                 const card = document.createElement("div");
-                card.className = "listing-card";
+                card.className = "browse-card";
+                card.onclick = () => window.location.href = "/booking/" + l._id;
+
+                const dummyDesc = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+                const desc = l.description ? l.description : dummyDesc;
+
                 card.innerHTML = `
                     <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
                     <h3>${l.name}</h3>
-                    <p>${l.type} — ${l.location}</p>
-                    <p>₱${l.price}/night</p>
-                    <p>${l.description || ""}</p>
-                    <a href="/booking/${l._id}"><button>Book Now</button></a>
+                    <div class="badges">
+                        <span class="guest-favorite">GUEST FAVORITE</span>
+                        <span class="stars">★★★★★</span>
+                    </div>
+                    <p class="desc">${desc}</p>
+                    <p class="price"><strong>${l.price}</strong> for x nights</p>
                 `;
                 grid.appendChild(card);
             });
