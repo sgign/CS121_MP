@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>HouseHop - Admin: All Bookings</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body id="adminBookingsPage">
     <header>
         <h2>HouseHop Admin</h2>
@@ -39,7 +41,7 @@
                 const end = new Date(b.endDate).toLocaleDateString();
                 card.innerHTML = `
                     <p><strong>${b.listingId.name}</strong> (${b.listingId.location})</p>
-                    <p>Guest: ${b.guestId.username}</p>
+                    <p>Guest: ${b.guestUsername}</p>
                     <p>Dates: ${start} → ${end}</p>
                     <p>Status: <span class="status status-${b.status}">${b.status.toUpperCase()}</span></p>
                 `;
@@ -50,4 +52,5 @@
         loadBookings();
     </script>
 </body>
+
 </html>

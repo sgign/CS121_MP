@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>HouseHop - Booking Requests</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body id="bookingRequestsPage">
     <header>
         <h2>HouseHop</h2>
@@ -46,7 +48,7 @@
 
                 card.innerHTML = `
                     <h3>${b.listingId.name}</h3>
-                    <p>Guest: ${b.guestId.username}</p>
+                    <p>Guest: ${b.guestUsername}</p>
                     <p>Dates: ${start} to ${end}</p>
                     <p>Status: <span class="status status-${b.status}">${b.status.toUpperCase()}</span></p>
                     <div class="actions">${actionButtons}</div>
@@ -76,4 +78,5 @@
         loadRequests();
     </script>
 </body>
+
 </html>

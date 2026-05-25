@@ -60,7 +60,7 @@ const Booking = mongoose.model("Booking", bookingSchema);
 // ==============================
 const USERS = [
     { id: "1", username: "admin", password: "123", role: "admin" },
-    { id: "2", username: "host",  password: "123", role: "host"  },
+    { id: "2", username: "host", password: "123", role: "host" },
     { id: "3", username: "guest", password: "123", role: "guest" },
 ];
 
@@ -249,19 +249,33 @@ app.get("/bookings/my", isAuthenticated, requireRole("guest"), async (req, res) 
     res.json(result);
 });
 
-// GET /bookings/host — host sees bookings for their listings
+// GET /bookings/host -- host sees bookings for their listings
 app.get("/bookings/host", isAuthenticated, requireRole("host"), async (req, res) => {
     const listings = await Listing.find({ hostId: req.session.user.id });
     const listingIds = listings.map(l => l._id);
     const bookings = await Booking.find({ listingId: { $in: listingIds } })
         .populate("listingId", "name location");
-    res.json(bookings);
+
+    const result = bookings.map(b => {
+        const obj = b.toObject();
+        const user = USERS.find(u => u.id === b.guestId);
+        obj.guestUsername = user ? user.username : "Unknown";
+        return obj;
+    });
+
+    res.json(result);
 });
 
-// GET /bookings/all — admin sees all bookings
+// GET /bookings/all -- admin sees all bookings
 app.get("/bookings/all", isAuthenticated, requireRole("admin"), async (req, res) => {
     const bookings = await Booking.find().populate("listingId", "name location");
-    res.json(bookings);
+    const result = bookings.map(b => {
+        const obj = b.toObject();
+        const user = USERS.find(u => u.id === b.guestId);
+        obj.guestUsername = user ? user.username : "Unknown";
+        return obj;
+    });
+    res.json(result);
 });
 
 // POST /bookings — guest creates a booking
