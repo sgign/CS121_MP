@@ -187,18 +187,17 @@
             
             document.getElementById("mainImage").src = images[0];
             
-            // Populate thumbnails cycling through available images
+            // Populate thumbnails with available images, fill rest with placeholder
             const thumbnails = document.querySelectorAll('.thumbnail');
-            let thumbIndex = 1; // start from 2nd image if available
+            let thumbIndex = 0; // start from 1st image
             thumbnails.forEach((img) => {
-                const srcImg = images[thumbIndex % images.length];
+                const srcImg = thumbIndex < images.length ? images[thumbIndex] : '/images/placeholder.png';
                 img.src = srcImg;
-                
+                img.style.display = 'block';
                 img.style.cursor = 'pointer';
                 img.onclick = () => {
                     document.getElementById("mainImage").src = srcImg;
                 };
-                
                 thumbIndex++;
             });
 
