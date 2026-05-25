@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>HouseHop - Login</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body id="loginPage">
-    <h1>HouseHop Login</h1>
 
-    <div class="login-card">
+<body id="loginPage">
+
+    <div class="login-container">
+        <img src="/images/logo.png" alt="HouseHop" class="logo">
+        <p class="tagline">Hop to your next vacation getaway!</p>
+
         <div class="input-group">
-            <label>Username</label>
             <input id="username" placeholder="Username">
         </div>
         <div class="input-group">
-            <label>Password</label>
             <input id="password" type="password" placeholder="Password">
         </div>
-        <button onclick="login()">LOGIN</button>
-        <p style="text-align:center; margin-top: 10px;">No account yet? <a href="/register">Register</a></p>
+
+        <button class="login-button" onclick="login()">LOGIN</button>
+        <p id="loginMsg"></p>
     </div>
 
     <script>
@@ -33,14 +36,15 @@
 
             if (res.ok) {
                 const data = await res.json();
-                // Redirect based on role
                 if (data.role === "guest") window.location.href = "/browse";
                 else if (data.role === "host") window.location.href = "/my-listings";
                 else if (data.role === "admin") window.location.href = "/admin/listings";
             } else {
-                alert("Invalid credentials");
+                document.getElementById("loginMsg").textContent = "Invalid credentials";
+                document.getElementById("loginMsg").style.color = "red";
             }
         }
     </script>
 </body>
+
 </html>

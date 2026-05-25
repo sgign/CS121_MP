@@ -28,7 +28,9 @@ nav a {
     color: #555;
 }
 
-h1 { color: #9ba3d0; }
+h1 {
+    color: #9ba3d0;
+}
 
 .input-group {
     display: flex;
@@ -36,7 +38,9 @@ h1 { color: #9ba3d0; }
     margin-bottom: 15px;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -55,26 +59,58 @@ button {
     margin: 5px;
 }
 
-button:hover { background: #8a92c0; }
+button:hover {
+    background: #8a92c0;
+}
 
-.card, .listing-card, .booking-card, .form-card {
+.card,
+.listing-card,
+.booking-card,
+.form-card {
     background: white;
     border: 1px solid #eee;
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 15px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-.status { font-weight: bold; }
-.status-pending { color: orange; }
-.status-approved { color: green; }
-.status-rejected { color: red; }
+.status {
+    font-weight: bold;
+}
 
-.role-badge { font-size: 12px; padding: 2px 8px; border-radius: 20px; }
-.role-guest { background: #d6eef4; color: #4a7a84; }
-.role-host { background: #e4f1d6; color: #5d7a4a; }
-.role-admin { background: #f8e8e9; color: #721c25; }
+.status-pending {
+    color: orange;
+}
+
+.status-approved {
+    color: green;
+}
+
+.status-rejected {
+    color: red;
+}
+
+.role-badge {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.role-guest {
+    background: #d6eef4;
+    color: #4a7a84;
+}
+
+.role-host {
+    background: #e4f1d6;
+    color: #5d7a4a;
+}
+
+.role-admin {
+    background: #f8e8e9;
+    color: #721c25;
+}
 
 .controls {
     display: flex;
@@ -100,9 +136,11 @@ button:hover { background: #8a92c0; }
 /* Edit modal */
 #editModal {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -117,4 +155,83 @@ button:hover { background: #8a92c0; }
     max-width: 500px;
     max-height: 90vh;
     overflow-y: auto;
+}
+
+#loginPage {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, #a8d0f0 0%, #d6eaf8 60%, #f0f4f8 100%);
+    background-image: url('/images/Background.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    max-width: 500px;
+}
+
+.logo {
+    width: 380px;
+    margin-bottom: 5px;
+}
+
+.tagline {
+    color: #7a9ab5;
+    font-size: 16px;
+    margin-bottom: 30px;
+    margin-top: 0;
+}
+
+#loginPage .input-group {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+#loginPage input {
+    width: 100%;
+    padding: 18px 25px;
+    border: none;
+    border-radius: 50px;
+    background-color: rgba(255, 255, 255, 0.85);
+    font-size: 15px;
+    outline: none;
+    box-sizing: border-box;
+    color: #555;
+}
+
+#loginPage input::placeholder {
+    color: #aac4d8;
+}
+
+#loginPage input:focus {
+    background-color: white;
+    box-shadow: 0 0 8px rgba(100, 160, 210, 0.3);
+}
+
+.login-button {
+    margin-top: 10px;
+    width: 200px;
+    background-color: #5fa8d3;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 15px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.login-button:hover {
+    background-color: #4a90be;
+    transform: scale(1.03);
 }
