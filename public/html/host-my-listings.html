@@ -114,14 +114,15 @@
             filtered.forEach(l => {
                 const hasPending = pendingListingIds.has(l._id);
                 const card = document.createElement("div");
-                card.className = "listing-card-host";
+                card.className = "listing-card";
                 card.innerHTML = `
                     ${hasPending ? `<div class="pending-badge">PENDING REQUESTS</div>` : ""}
                     <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
                     <div class="listing-card-info">
                         <h3>${l.name}</h3>
-                        <p>${l.location || "Location will appear here"}</p>
-                        <p><strong>${l.price.toLocaleString()}/night</strong></p>
+                        <p>${l.type} - ${l.location}</p>
+                        <p><strong>₱${l.price.toLocaleString()}/night</strong></p>
+                        <p>${l.description || ""}</p>
                         <div class="card-actions">
                             <button class="outline-btn" onclick="openEdit(${JSON.stringify(l).replace(/"/g, '&quot;')})">EDIT LISTING</button>
                             <button class="outline-btn" onclick="deleteListing('${l._id}')">DELETE</button>

@@ -76,6 +76,10 @@ button:hover {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
+.listing-card {
+    position: relative;
+}
+
 .status {
     font-weight: bold;
 }
@@ -529,7 +533,6 @@ button:hover {
 
 /* Final action fallback state matching 'REJECTED' reference label pill */
 .status-badge {
-    border: 2px solid #e07070;
     background: transparent;
     color: #e07070;
     padding: 8px 25px;
@@ -544,13 +547,21 @@ button:hover {
 }
 
 .status-approved {
-    border-color: #5fa8d3;
-    color: #5fa8d3;
+    background: #5fa8d3;
+    color: white;
 }
 
 .status-rejected {
     background: #e07070;
     color: white;
+}
+
+.status-approved:hover {
+    background: #5fa8d3;
+}
+
+.status-rejected:hover {
+    background: #e07070;
 }
 
 .err-msg {
