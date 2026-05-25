@@ -40,6 +40,7 @@
 
             const res = await fetch("/bookings/host");
             const bookings = await res.json();
+            console.log(JSON.stringify(bookings[0]?.listingId));
 
             const filtered = bookings.filter(b => {
                 const matchName = b.listingId.name.toLowerCase().includes(search);
