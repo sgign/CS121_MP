@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StayEZ - Admin: Users</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body id="adminUsersPage">
+    <header>
+        <h2>StayEZ Admin</h2>
+        <nav>
+            <a href="/admin/listings">All Listings</a>
+            <a href="/admin/bookings">All Bookings</a>
+            <a href="/admin/users">All Users</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>All Users</h1>
+        <div id="usersContainer"></div>
+    </main>
+
+    <script>
+        async function loadUsers() {
+            const res = await fetch("/admin/users-list");
+            const users = await res.json();
+            const container = document.getElementById("usersContainer");
+            container.innerHTML = "";
+
+            users.forEach(u => {
+                const row = document.createElement("div");
+                row.className = "user-row";
+                row.innerHTML = `
+                    <p><strong>${u.username}</strong> — <span class="role-badge role-${u.role}">${u.role.toUpperCase()}</span></p>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        loadUsers();
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StayEZ - My Bookings</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body id="myBookingsPage">
+    <header>
+        <h2>StayEZ</h2>
+        <nav>
+            <a href="/browse">Browse</a>
+            <a href="/my-bookings">My Bookings</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>My Bookings</h1>
+        <div id="bookingsList"></div>
+    </main>
+
+    <script>
+        async function loadMyBookings() {
+            const res = await fetch("/bookings/my");
+            const bookings = await res.json();
+            const container = document.getElementById("bookingsList");
+            container.innerHTML = "";
+
+            if (bookings.length === 0) {
+                container.innerHTML = "<p>No bookings yet.</p>";
+                return;
+            }
+
+            bookings.forEach(b => {
+                const card = document.createElement("div");
+                card.className = "booking-card";
+
+                const listing = b.listingId;
+                const start = new Date(b.startDate).toLocaleDateString();
+                const end = new Date(b.endDate).toLocaleDateString();
+
+                // Contact only visible if approved
+                const contactHtml = b.status === "approved"
+                    ? `<p>Host Contact: <strong>${listing.contactNumber}</strong></p>`
+                    : `<p>Host contact visible after approval.</p>`;
+
+                card.innerHTML = `
+                    <h3>${listing.name}</h3>
+                    <p>${listing.location} — ${listing.type}</p>
+                    <p>Dates: ${start} to ${end}</p>
+                    <p>Status: <span class="status status-${b.status}">${b.status.toUpperCase()}</span></p>
+                    ${contactHtml}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        loadMyBookings();
+    </script>
+</body>
+</html>

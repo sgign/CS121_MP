@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StayEZ - Book Listing</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body id="bookingPage">
+    <header>
+        <h2>StayEZ</h2>
+        <nav>
+            <a href="/browse">Browse</a>
+            <a href="/my-bookings">My Bookings</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Book Listing</h1>
+
+        <!-- Listing details loaded here -->
+        <div id="listingDetail"></div>
+
+        <!-- Booking form -->
+        <div class="booking-form">
+            <h2>Select Dates</h2>
+            <div class="input-group">
+                <label>Start Date</label>
+                <input type="date" id="startDate">
+            </div>
+            <div class="input-group">
+                <label>End Date</label>
+                <input type="date" id="endDate">
+            </div>
+            <button onclick="submitBooking()">CONFIRM BOOKING</button>
+            <p id="bookingMsg"></p>
+        </div>
+    </main>
+
+    <script>
+        // Get listing ID from URL
+        const listingId = window.location.pathname.split("/").pop();
+
+        async function loadListing() {
+            const res = await fetch("/listings/" + listingId);
+            const l = await res.json();
+
+            document.getElementById("listingDetail").innerHTML = `
+                <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
+                <h2>${l.name}</h2>
+                <p>${l.type} — ${l.location}</p>
+                <p><strong>₱${l.price}/night</strong></p>
+                <p>${l.description || ""}</p>
+            `;
+        }
+
+        async function submitBooking() {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+            const msg = document.getElementById("bookingMsg");
+
+            if (!startDate || !endDate) {
+                msg.textContent = "Please select both dates.";
+                return;
+            }
+
+            const res = await fetch("/bookings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ listingId, startDate, endDate })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                msg.textContent = "Booking submitted! Status: pending.";
+                msg.style.color = "green";
+            } else {
+                msg.textContent = data.message;
+                msg.style.color = "red";
+            }
+        }
+
+        loadListing();
+    </script>
+</body>
+</html>

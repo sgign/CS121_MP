@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StayEZ - Admin: Listings</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body id="adminListingsPage">
+    <header>
+        <h2>StayEZ Admin</h2>
+        <nav>
+            <a href="/admin/listings">All Listings</a>
+            <a href="/admin/bookings">All Bookings</a>
+            <a href="/admin/users">All Users</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Manage All Listings</h1>
+        <div id="listingsContainer"></div>
+    </main>
+
+    <script>
+        async function loadListings() {
+            const res = await fetch("/listings");
+            const listings = await res.json();
+            const container = document.getElementById("listingsContainer");
+            container.innerHTML = "";
+
+            if (listings.length === 0) {
+                container.innerHTML = "<p>No listings found.</p>";
+                return;
+            }
+
+            listings.forEach(l => {
+                const card = document.createElement("div");
+                card.className = "listing-card";
+                card.innerHTML = `
+                    <h3>${l.name}</h3>
+                    <p>${l.type} — ${l.location}</p>
+                    <p>₱${l.price}/night</p>
+                    <p>Host: ${l.hostId.username}</p>
+                    <button onclick="deleteListing('${l._id}')">Delete</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function deleteListing(id) {
+            if (!confirm("Delete this listing?")) return;
+            await fetch("/listings/" + id, { method: "DELETE" });
+            loadListings();
+        }
+
+        loadListings();
+    </script>
+</body>
+</html>

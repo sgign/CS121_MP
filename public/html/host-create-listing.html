@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StayEZ - Create Listing</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body id="createListingPage">
+    <header>
+        <h2>StayEZ</h2>
+        <nav>
+            <a href="/my-listings">My Listings</a>
+            <a href="/create-listing">+ New Listing</a>
+            <a href="/booking-requests">Booking Requests</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Create New Listing</h1>
+
+        <div class="form-card">
+            <div class="input-group">
+                <label>Listing Name</label>
+                <input id="name" placeholder="e.g. Cozy Room in Makati">
+            </div>
+            <div class="input-group">
+                <label>Type</label>
+                <select id="type">
+                    <option value="hotel">Hotel</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="dorm">Dorm</option>
+                    <option value="guest_room">Guest Room</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Location</label>
+                <input id="location" placeholder="e.g. Manila">
+            </div>
+            <div class="input-group">
+                <label>Price per Night (₱)</label>
+                <input id="price" type="number" placeholder="e.g. 1500">
+            </div>
+            <div class="input-group">
+                <label>Description</label>
+                <textarea id="description" placeholder="Describe your listing..."></textarea>
+            </div>
+            <div class="input-group">
+                <label>Image URL</label>
+                <input id="image" placeholder="https://example.com/image.jpg">
+            </div>
+            <div class="input-group">
+                <label>Contact Number</label>
+                <input id="contactNumber" placeholder="e.g. 09171234567">
+            </div>
+
+            <button onclick="createListing()">CREATE LISTING</button>
+            <p id="formMsg"></p>
+        </div>
+    </main>
+
+    <script>
+        async function createListing() {
+            const data = {
+                name: document.getElementById("name").value,
+                type: document.getElementById("type").value,
+                location: document.getElementById("location").value,
+                price: parseFloat(document.getElementById("price").value),
+                description: document.getElementById("description").value,
+                image: document.getElementById("image").value,
+                contactNumber: document.getElementById("contactNumber").value,
+            };
+
+            const res = await fetch("/listings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            const msg = document.getElementById("formMsg");
+            if (res.ok) {
+                msg.textContent = "Listing created successfully!";
+                msg.style.color = "green";
+            } else {
+                const err = await res.json();
+                msg.textContent = err.message;
+                msg.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>

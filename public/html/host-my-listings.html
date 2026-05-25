@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StayEZ - My Listings</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body id="myListingsPage">
+    <header>
+        <h2>StayEZ</h2>
+        <nav>
+            <a href="/my-listings">My Listings</a>
+            <a href="/create-listing">+ New Listing</a>
+            <a href="/booking-requests">Booking Requests</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>My Listings</h1>
+        <div id="listingsContainer"></div>
+    </main>
+
+    <!-- Edit Modal -->
+    <div id="editModal" style="display:none;">
+        <div class="modal-content">
+            <h2>Edit Listing</h2>
+            <input type="hidden" id="editId">
+            <div class="input-group"><label>Name</label><input id="editName"></div>
+            <div class="input-group"><label>Type</label>
+                <select id="editType">
+                    <option value="hotel">Hotel</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="dorm">Dorm</option>
+                    <option value="guest_room">Guest Room</option>
+                </select>
+            </div>
+            <div class="input-group"><label>Location</label><input id="editLocation"></div>
+            <div class="input-group"><label>Price</label><input id="editPrice" type="number"></div>
+            <div class="input-group"><label>Description</label><textarea id="editDescription"></textarea></div>
+            <div class="input-group"><label>Image URL</label><input id="editImage"></div>
+            <div class="input-group"><label>Contact Number</label><input id="editContact"></div>
+            <button onclick="saveEdit()">SAVE</button>
+            <button onclick="closeModal()">CANCEL</button>
+            <p id="editMsg"></p>
+        </div>
+    </div>
+
+    <script>
+        async function loadMyListings() {
+            // Get all listings and filter by current host (via /me)
+            const meRes = await fetch("/me");
+            const me = await meRes.json();
+
+            const res = await fetch("/listings");
+            const listings = await res.json();
+            const mine = listings.filter(l => l.hostId._id === me.id || l.hostId === me.id);
+
+            const container = document.getElementById("listingsContainer");
+            container.innerHTML = "";
+
+            if (mine.length === 0) {
+                container.innerHTML = "<p>No listings yet. <a href='/create-listing'>Create one!</a></p>";
+                return;
+            }
+
+            mine.forEach(l => {
+                const card = document.createElement("div");
+                card.className = "listing-card";
+                card.innerHTML = `
+                    <h3>${l.name}</h3>
+                    <p>${l.type} — ${l.location}</p>
+                    <p>₱${l.price}/night</p>
+                    <button onclick="openEdit(${JSON.stringify(l).replace(/"/g, '&quot;')})">Edit</button>
+                    <button onclick="deleteListing('${l._id}')">Delete</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openEdit(listing) {
+            document.getElementById("editId").value = listing._id;
+            document.getElementById("editName").value = listing.name;
+            document.getElementById("editType").value = listing.type;
+            document.getElementById("editLocation").value = listing.location;
+            document.getElementById("editPrice").value = listing.price;
+            document.getElementById("editDescription").value = listing.description || "";
+            document.getElementById("editImage").value = listing.image || "";
+            document.getElementById("editContact").value = listing.contactNumber;
+            document.getElementById("editModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("editModal").style.display = "none";
+        }
+
+        async function saveEdit() {
+            const id = document.getElementById("editId").value;
+            const data = {
+                name: document.getElementById("editName").value,
+                type: document.getElementById("editType").value,
+                location: document.getElementById("editLocation").value,
+                price: parseFloat(document.getElementById("editPrice").value),
+                description: document.getElementById("editDescription").value,
+                image: document.getElementById("editImage").value,
+                contactNumber: document.getElementById("editContact").value,
+            };
+
+            const res = await fetch("/listings/" + id, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                closeModal();
+                loadMyListings();
+            } else {
+                document.getElementById("editMsg").textContent = "Error saving.";
+            }
+        }
+
+        async function deleteListing(id) {
+            if (!confirm("Delete this listing?")) return;
+            await fetch("/listings/" + id, { method: "DELETE" });
+            loadMyListings();
+        }
+
+        loadMyListings();
+    </script>
+</body>
+</html>

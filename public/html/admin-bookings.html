@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StayEZ - Admin: All Bookings</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body id="adminBookingsPage">
+    <header>
+        <h2>StayEZ Admin</h2>
+        <nav>
+            <a href="/admin/listings">All Listings</a>
+            <a href="/admin/bookings">All Bookings</a>
+            <a href="/admin/users">All Users</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>All Bookings</h1>
+        <div id="bookingsContainer"></div>
+    </main>
+
+    <script>
+        async function loadBookings() {
+            const res = await fetch("/bookings/all");
+            const bookings = await res.json();
+            const container = document.getElementById("bookingsContainer");
+            container.innerHTML = "";
+
+            if (bookings.length === 0) {
+                container.innerHTML = "<p>No bookings found.</p>";
+                return;
+            }
+
+            bookings.forEach(b => {
+                const card = document.createElement("div");
+                card.className = "booking-card";
+                const start = new Date(b.startDate).toLocaleDateString();
+                const end = new Date(b.endDate).toLocaleDateString();
+                card.innerHTML = `
+                    <p><strong>${b.listingId.name}</strong> (${b.listingId.location})</p>
+                    <p>Guest: ${b.guestId.username}</p>
+                    <p>Dates: ${start} → ${end}</p>
+                    <p>Status: <span class="status status-${b.status}">${b.status.toUpperCase()}</span></p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        loadBookings();
+    </script>
+</body>
+</html>

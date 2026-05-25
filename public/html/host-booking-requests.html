@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StayEZ - Booking Requests</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body id="bookingRequestsPage">
+    <header>
+        <h2>StayEZ</h2>
+        <nav>
+            <a href="/my-listings">My Listings</a>
+            <a href="/create-listing">+ New Listing</a>
+            <a href="/booking-requests">Booking Requests</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Booking Requests</h1>
+        <div id="requestsList"></div>
+    </main>
+
+    <script>
+        async function loadRequests() {
+            const res = await fetch("/bookings/host");
+            const bookings = await res.json();
+            const container = document.getElementById("requestsList");
+            container.innerHTML = "";
+
+            if (bookings.length === 0) {
+                container.innerHTML = "<p>No booking requests yet.</p>";
+                return;
+            }
+
+            bookings.forEach(b => {
+                const card = document.createElement("div");
+                card.className = "booking-card";
+
+                const start = new Date(b.startDate).toLocaleDateString();
+                const end = new Date(b.endDate).toLocaleDateString();
+
+                const actionButtons = b.status === "pending"
+                    ? `<button onclick="updateStatus('${b._id}', 'approved')">Approve</button>
+                       <button onclick="updateStatus('${b._id}', 'rejected')">Reject</button>`
+                    : `<span>Status: <strong>${b.status.toUpperCase()}</strong></span>`;
+
+                card.innerHTML = `
+                    <h3>${b.listingId.name}</h3>
+                    <p>Guest: ${b.guestId.username}</p>
+                    <p>Dates: ${start} to ${end}</p>
+                    <p>Status: <span class="status status-${b.status}">${b.status.toUpperCase()}</span></p>
+                    <div class="actions">${actionButtons}</div>
+                    <p class="msgArea" id="msg-${b._id}"></p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function updateStatus(bookingId, status) {
+            const res = await fetch(`/bookings/${bookingId}/status`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status })
+            });
+
+            const msgEl = document.getElementById("msg-" + bookingId);
+            if (res.ok) {
+                loadRequests();
+            } else {
+                const data = await res.json();
+                msgEl.textContent = data.message;
+                msgEl.style.color = "red";
+            }
+        }
+
+        loadRequests();
+    </script>
+</body>
+</html>

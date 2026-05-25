@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StayEZ - Browse Listings</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body id="browsePage">
+    <header>
+        <h2>StayEZ</h2>
+        <nav>
+            <a href="/browse">Browse</a>
+            <a href="/my-bookings">My Bookings</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Browse Listings</h1>
+
+        <!-- Search, Filter, Sort Controls -->
+        <div class="controls">
+            <input id="search" placeholder="Search by name" oninput="loadListings()">
+            <input id="location" placeholder="Filter by location" oninput="loadListings()">
+            <select id="type" onchange="loadListings()">
+                <option value="">All Types</option>
+                <option>hotel</option>
+                <option>apartment</option>
+                <option>dorm</option>
+                <option>guest_room</option>
+            </select>
+            <select id="sort" onchange="loadListings()">
+                <option value="">Sort by Price</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+            </select>
+        </div>
+
+        <!-- Listings Grid -->
+        <div id="listingsGrid"></div>
+    </main>
+
+    <script>
+        async function loadListings() {
+            const search = document.getElementById("search").value;
+            const location = document.getElementById("location").value;
+            const type = document.getElementById("type").value;
+            const sort = document.getElementById("sort").value;
+
+            const params = new URLSearchParams();
+            if (search) params.append("search", search);
+            if (location) params.append("location", location);
+            if (type) params.append("type", type);
+            if (sort) params.append("sort", sort);
+
+            const res = await fetch("/listings?" + params.toString());
+            const listings = await res.json();
+
+            const grid = document.getElementById("listingsGrid");
+            grid.innerHTML = "";
+
+            listings.forEach(l => {
+                const card = document.createElement("div");
+                card.className = "listing-card";
+                card.innerHTML = `
+                    <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
+                    <h3>${l.name}</h3>
+                    <p>${l.type} — ${l.location}</p>
+                    <p>₱${l.price}/night</p>
+                    <p>${l.description || ""}</p>
+                    <a href="/booking/${l._id}"><button>Book Now</button></a>
+                `;
+                grid.appendChild(card);
+            });
+
+            if (listings.length === 0) {
+                grid.innerHTML = "<p>No listings found.</p>";
+            }
+        }
+
+        loadListings();
+    </script>
+</body>
+</html>

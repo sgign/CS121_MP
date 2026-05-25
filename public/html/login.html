@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StayEZ - Login</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body id="loginPage">
+    <h1>StayEZ Login</h1>
+
+    <div class="login-card">
+        <div class="input-group">
+            <label>Username</label>
+            <input id="username" placeholder="Username">
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+            <input id="password" type="password" placeholder="Password">
+        </div>
+        <button onclick="login()">LOGIN</button>
+        <p style="text-align:center; margin-top: 10px;">No account yet? <a href="/register">Register</a></p>
+    </div>
+
+    <script>
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            const res = await fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                // Redirect based on role
+                if (data.role === "guest") window.location.href = "/browse";
+                else if (data.role === "host") window.location.href = "/my-listings";
+                else if (data.role === "admin") window.location.href = "/admin/listings";
+            } else {
+                alert("Invalid credentials");
+            }
+        }
+    </script>
+</body>
+</html>
