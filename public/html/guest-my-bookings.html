@@ -2,21 +2,33 @@
 <html>
 <head>
     <title>HouseHop - My Bookings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body id="myBookingsPage">
-    <header>
-        <h2>HouseHop</h2>
-        <nav>
+    <header class="main-header">
+        <img src="/images/logo.png" alt="HouseHop" class="header-logo">
+        <nav class="main-nav">
             <a href="/browse">Browse</a>
             <a href="/my-bookings">My Bookings</a>
             <a href="/logout">Logout</a>
         </nav>
     </header>
 
-    <main>
-        <h1>My Bookings</h1>
-        <div id="bookingsList"></div>
+    <main class="browse-main" style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <img src="/images/my-bookings.png" alt="MY BOOKINGS" style="max-height: 80px; object-fit: contain;">
+        </div>
+        
+        <div class="controls browse-controls" style="justify-content: flex-end; max-width: 900px; margin: 0 auto 50px auto; gap: 15px;">
+            <input id="search" placeholder="Search by name" oninput="loadMyBookings()" style="flex: unset; width: 220px; border-radius: 40px; padding: 12px 20px; font-size: 14px;">
+            <button class="btn-filters" style="width: auto; padding: 12px 24px; font-size: 14px;">
+                <img src="/images/filter-icon.png" alt="Filter" style="width: 16px; height: 16px; object-fit: contain;">
+                FILTERS
+            </button>
+        </div>
+
+        <div id="bookingsList" class="grid" style="grid-template-columns: 1fr 1fr; gap: 30px; max-width: 900px; margin: 0 auto;"></div>
     </main>
 
     <script>
@@ -27,36 +39,36 @@
             container.innerHTML = "";
 
             if (bookings.length === 0) {
-                container.innerHTML = "<p>No bookings yet.</p>";
+                container.innerHTML = "<p style='font-family: Inter; color: #777;'>No bookings yet.</p>";
                 return;
             }
 
             bookings.forEach(b => {
                 const card = document.createElement("div");
-                card.className = "booking-card";
+                card.className = "booking-horizontal-card";
 
                 const listing = b.listingId;
-                const start = new Date(b.startDate).toLocaleDateString();
-                const end = new Date(b.endDate).toLocaleDateString();
+                
+                let imageUrl = '/images/placeholder.png';
+                if (listing.images && listing.images.length > 0) {
+                    imageUrl = listing.images[0];
+                } else if (listing.image) {
+                    imageUrl = listing.image;
+                }
 
-                // Contact only visible if approved
-                const contactHtml = b.status === "approved"
-                    ? `<p>Host Contact: <strong>${listing.contactNumber}</strong></p>`
-                    : `<p>Host contact visible after approval.</p>`;
-
-                const typeLabels = {
-                    hotel: "Hotel",
-                    apartment: "Apartment",
-                    dorm: "Dorm",
-                    guest_room: "Guest Room"
-                };
+                const statusClass = b.status === "pending" ? "badge-status-pending" : (b.status === "rejected" ? "badge-status-rejected" : "badge-status-approved");
+                const locationText = listing.location || "Location will appear here";
 
                 card.innerHTML = `
-                    <h3>${listing.name}</h3>
-                    <p>${listing.location} — ${typeLabels[listing.type] || listing.type}</p>
-                    <p>Dates: ${start} to ${end}</p>
-                    <p>Status: <span class="status status-${b.status}">${b.status.toUpperCase()}</span></p>
-                    ${contactHtml}
+                    <img src="${imageUrl}" alt="${listing.name}">
+                    <div class="booking-horizontal-content">
+                        <div>
+                            <h3 class="booking-horizontal-title">${listing.name}</h3>
+                            <p class="booking-horizontal-desc">${locationText}</p>
+                            <p class="booking-horizontal-price">${listing.price.toLocaleString()}/night</p>
+                        </div>
+                        <span class="badge-status ${statusClass}">REQUEST ${b.status.toUpperCase()}</span>
+                    </div>
                 `;
                 container.appendChild(card);
             });
