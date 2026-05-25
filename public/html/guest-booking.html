@@ -3,6 +3,7 @@
 <head>
     <title>HouseHop - Book Listing</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body id="bookingPage">
@@ -54,9 +55,121 @@
                 </div>
             </div>
         </div>
+
+        <div class="expanded-info-section">
+            <hr class="section-divider">
+            <div class="info-grid">
+                <div class="info-column">
+                    <h2>About this place</h2>
+                    <p id="fullDescription">Loading...</p>
+                </div>
+                <div class="info-column">
+                    <h2>Details</h2>
+                    <ul class="details-list">
+                        <li><strong>Location:</strong> <span id="listingLocation">...</span></li>
+                        <li><strong>Property Type:</strong> <span id="listingType">...</span></li>
+                        <li><strong>Contact Host:</strong> <span id="listingContact">...</span></li>
+                    </ul>
+                    
+                    <h2 style="margin-top: 30px; font-size: 22px; font-weight: 600; margin-bottom: 24px;">What this place offers</h2>
+                    <div class="amenities-grid">
+                        <div class="amenity-item">
+                            <span class="material-symbols-outlined">restaurant</span>
+                            <span>Kitchen</span>
+                        </div>
+                        <div class="amenity-item">
+                            <span class="material-symbols-outlined">wifi</span>
+                            <span>Wifi</span>
+                        </div>
+                        <div class="amenity-item">
+                            <span class="material-symbols-outlined">tv</span>
+                            <span>TV</span>
+                        </div>
+                        <div class="amenity-item">
+                            <span class="material-symbols-outlined">elevator</span>
+                            <span>Elevator</span>
+                        </div>
+                        <div class="amenity-item">
+                            <span class="material-symbols-outlined">balcony</span>
+                            <span>Private patio or balcony</span>
+                        </div>
+                        <div class="amenity-item">
+                            <span class="material-symbols-outlined">luggage</span>
+                            <span>Luggage dropoff allowed</span>
+                        </div>
+                        <div class="amenity-item">
+                            <span class="material-symbols-outlined">kitchen</span>
+                            <span>Refrigerator</span>
+                        </div>
+                        <div class="amenity-item">
+                            <span class="material-symbols-outlined">microwave</span>
+                            <span>Microwave</span>
+                        </div>
+                        <div class="amenity-item">
+                            <span class="material-symbols-outlined">directions_car</span>
+                            <span>Paid parking off premises</span>
+                        </div>
+                        <div class="amenity-item">
+                            <span class="material-symbols-outlined">videocam</span>
+                            <span>Exterior security cameras on property</span>
+                        </div>
+                        
+                        <!-- Hidden amenities -->
+                        <div class="amenity-item hidden-amenity" style="display: none;">
+                            <span class="material-symbols-outlined">hot_tub</span>
+                            <span>Private hot tub</span>
+                        </div>
+                        <div class="amenity-item hidden-amenity" style="display: none;">
+                            <span class="material-symbols-outlined">pool</span>
+                            <span>Shared pool</span>
+                        </div>
+                        <div class="amenity-item hidden-amenity" style="display: none;">
+                            <span class="material-symbols-outlined">fitness_center</span>
+                            <span>Gym</span>
+                        </div>
+                        <div class="amenity-item hidden-amenity" style="display: none;">
+                            <span class="material-symbols-outlined">outdoor_grill</span>
+                            <span>BBQ grill</span>
+                        </div>
+                        <div class="amenity-item hidden-amenity" style="display: none;">
+                            <span class="material-symbols-outlined">fireplace</span>
+                            <span>Indoor fireplace</span>
+                        </div>
+                        <div class="amenity-item hidden-amenity" style="display: none;">
+                            <span class="material-symbols-outlined">medical_services</span>
+                            <span>First aid kit</span>
+                        </div>
+                        <div class="amenity-item hidden-amenity" style="display: none;">
+                            <span class="material-symbols-outlined">detector_smoke</span>
+                            <span>Smoke alarm</span>
+                        </div>
+                        <div class="amenity-item hidden-amenity" style="display: none;">
+                            <span class="material-symbols-outlined">fire_extinguisher</span>
+                            <span>Fire extinguisher</span>
+                        </div>
+                    </div>
+                    <button class="show-all-amenities-btn" onclick="toggleAmenities()">Show all 18 amenities</button>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script>
+        let amenitiesExpanded = false;
+        
+        function toggleAmenities() {
+            const hiddenItems = document.querySelectorAll('.hidden-amenity');
+            const btn = document.querySelector('.show-all-amenities-btn');
+            
+            amenitiesExpanded = !amenitiesExpanded;
+            
+            hiddenItems.forEach(item => {
+                item.style.display = amenitiesExpanded ? 'flex' : 'none';
+            });
+            
+            btn.textContent = amenitiesExpanded ? "Show fewer amenities" : "Show all 18 amenities";
+        }
+
         const listingId = window.location.pathname.split("/").pop();
 
         async function loadListing() {
@@ -89,6 +202,19 @@
             document.getElementById("listingDesc").textContent = l.description || dummyDesc;
             
             document.getElementById("listingPrice").textContent = l.price.toLocaleString();
+            
+            // Populate expanded info
+            document.getElementById("fullDescription").textContent = l.description || "No description provided.";
+            document.getElementById("listingLocation").textContent = l.location || "N/A";
+            
+            const typeLabels = {
+                hotel: "Hotel",
+                apartment: "Apartment",
+                dorm: "Dorm",
+                guest_room: "Guest Room"
+            };
+            document.getElementById("listingType").textContent = typeLabels[l.type] || l.type || "N/A";
+            document.getElementById("listingContact").textContent = l.contactNumber || "N/A";
         }
 
         async function submitBooking() {
