@@ -17,9 +17,10 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
-    background: #f0f0f0;
-    margin-bottom: 20px;
+    padding: 20px 60px;
+    background: transparent;
+    position: relative;
+    z-index: 10;
 }
 
 nav a {
@@ -234,4 +235,418 @@ button:hover {
 .login-button:hover {
     background-color: #4a90be;
     transform: scale(1.03);
+}
+
+/* ===== HOST PAGES ===== */
+
+#hostPage {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+.mini-logo {
+    width: 120px;
+    height: auto;
+}
+
+.host-main {
+    padding: 20px 60px;
+}
+
+.host-main h1 {
+    text-align: center;
+    font-size: 42px;
+    font-weight: 900;
+    color: #4a4a4a;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+}
+
+.host-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    gap: 15px;
+}
+
+.host-controls.centered {
+    justify-content: center;
+}
+
+.host-controls input,
+.host-controls select {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+    outline: none;
+    min-width: 220px;
+}
+
+.host-controls-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.blue-btn {
+    background-color: #5fa8d3;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.blue-btn:hover {
+    background-color: #4a90be;
+    transform: scale(1.03);
+}
+
+.outline-btn {
+    background: transparent;
+    border: 2px solid #5fa8d3;
+    color: #5fa8d3;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.outline-btn:hover {
+    background: #5fa8d3;
+    color: white;
+}
+
+/* ===== UPDATED HOST CARDS (BROWSE MATCH) ===== */
+#myListingsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.listing-card-host {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.listing-card-host img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+
+    /* ===== ADD THESE PROPERTIES FOR THE GREY PLACEHOLDER ===== */
+    background-color: #f2f4f7;
+    /* Clean grey background tint */
+    position: relative;
+    color: #a0aec0;
+    /* Soft grey color for the fallback text */
+    font-size: 13px;
+    text-align: center;
+    line-height: 180px;
+    /* Vertically centers the alt text inside the block */
+}
+
+.listing-card-host .listing-card-info {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.listing-card-host h3 {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.listing-card-host p {
+    margin: 0;
+    color: #555;
+    font-size: 15px;
+}
+
+.listing-card-host p strong {
+    color: #333;
+    font-size: 16px;
+}
+
+.pending-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #f5c842;
+    color: #7a6000;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 6px 14px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    z-index: 2;
+}
+
+.card-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+/* ============================================= */
+
+/* Booking Requests Grid */
+#requestsGrid {
+    display: grid;
+    /* Automatically adjusts column count while enforcing your clean card layout width */
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    gap: 25px;
+}
+
+.request-card {
+    background: white;
+    /* Crisp, solid background matching reference */
+    border: 1px solid #e2e8f0;
+    /* Soft, clear border line */
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    /* Vertically centers the image and information blocks */
+    padding: 15px;
+    /* Creates the internal breathing room around the asset border */
+    gap: 20px;
+}
+
+.request-card img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 12px;
+    /* Gives the asset window rounded corners inside the card padding */
+    flex-shrink: 0;
+    background-color: #f7fafc;
+    /* Clean fallback fill while images are loading/empty */
+}
+
+.request-info {
+    padding: 0;
+    /* Cleared to let parent flex-gap handle layout spacing */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    /* Consistent vertical rhythm between titles and action item bar */
+}
+
+.request-info h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #4a4a4a;
+}
+
+.request-info p {
+    color: #666;
+    font-size: 15px;
+    margin: 0;
+}
+
+/* Status Items & Buttons Alignment */
+.pending-dot {
+    color: #e6a817;
+    font-weight: bold;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Container hosting the Approve/Reject buttons or final status pills */
+.request-info .card-actions,
+.request-info .status-container {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.approve-btn {
+    background: transparent;
+    border: 2px solid #5fa8d3;
+    color: #5fa8d3;
+    padding: 8px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.approve-btn:hover {
+    background: #5fa8d3;
+    color: white;
+}
+
+.reject-btn {
+    background: transparent;
+    border: 2px solid #e07070;
+    color: #e07070;
+    padding: 8px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.reject-btn:hover {
+    background: #e07070;
+    color: white;
+}
+
+/* Final action fallback state matching 'REJECTED' reference label pill */
+.status-badge {
+    border: 2px solid #e07070;
+    background: transparent;
+    color: #e07070;
+    padding: 8px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 13px;
+    letter-spacing: 1px;
+    display: inline-block;
+    text-align: center;
+    width: fit-content;
+    cursor: default;
+}
+
+.status-approved {
+    border-color: #5fa8d3;
+    color: #5fa8d3;
+}
+
+.status-rejected {
+    background: #e07070;
+    color: white;
+}
+
+.err-msg {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(180, 210, 235, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-box {
+    background: rgba(210, 230, 245, 0.97);
+    border-radius: 20px;
+    padding: 40px;
+    width: 90%;
+    max-width: 750px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-box h2 {
+    color: #5fa8d3;
+    font-size: 28px;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #666;
+}
+
+.modal-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    flex: 1;
+}
+
+.modal-field label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.modal-field input,
+.modal-field select,
+.modal-field textarea {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+    outline: none;
+}
+
+.modal-field textarea {
+    border-radius: 15px;
+    height: 120px;
+    resize: none;
+}
+
+.modal-row {
+    display: flex;
+    gap: 15px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
 }

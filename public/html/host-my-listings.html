@@ -1,112 +1,186 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>HouseHop - My Listings</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body id="myListingsPage">
-    <header>
-        <h2>HouseHop</h2>
-        <nav>
+
+<body id="hostPage">
+
+    <header class="headerz">
+        <img src="/images/logo.png" alt="HouseHop" class="mini-logo">
+        <nav class="nav-buttons">
             <a href="/my-listings">My Listings</a>
-            <a href="/create-listing">+ New Listing</a>
             <a href="/booking-requests">Booking Requests</a>
             <a href="/logout">Logout</a>
         </nav>
     </header>
 
-    <main>
+    <main class="host-main">
         <h1>My Listings</h1>
-        <div id="listingsContainer"></div>
+
+        <div class="host-controls">
+            <button class="blue-btn" onclick="openModal()">+ NEW LISTING</button>
+            <div class="host-controls-right">
+                <input id="searchListings" placeholder="Search by name" oninput="loadMyListings()">
+            </div>
+        </div>
+
+        <div id="myListingsGrid"></div>
     </main>
 
-    <!-- Edit Modal -->
-    <div id="editModal" style="display:none;">
-        <div class="modal-content">
-            <h2>Edit Listing</h2>
+    <!-- New / Edit Listing Modal -->
+    <div id="listingModal" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <h2 id="modalTitle">New Listing</h2>
+
             <input type="hidden" id="editId">
-            <div class="input-group"><label>Name</label><input id="editName"></div>
-            <div class="input-group"><label>Type</label>
-                <select id="editType">
-                    <option value="hotel">Hotel</option>
-                    <option value="apartment">Apartment</option>
-                    <option value="dorm">Dorm</option>
-                    <option value="guest_room">Guest Room</option>
-                </select>
+
+            <div class="modal-field full-width">
+                <label>Listing Name</label>
+                <input id="modalName" placeholder="e.g. Cozy Room in Taguig">
             </div>
-            <div class="input-group"><label>Location</label><input id="editLocation"></div>
-            <div class="input-group"><label>Price</label><input id="editPrice" type="number"></div>
-            <div class="input-group"><label>Description</label><textarea id="editDescription"></textarea></div>
-            <div class="input-group"><label>Image URL</label><input id="editImage"></div>
-            <div class="input-group"><label>Contact Number</label><input id="editContact"></div>
-            <button onclick="saveEdit()">SAVE</button>
-            <button onclick="closeModal()">CANCEL</button>
-            <p id="editMsg"></p>
+
+            <div class="modal-row">
+                <div class="modal-field">
+                    <label>Location</label>
+                    <input id="modalLocation" placeholder="e.g. BGC, Taguig">
+                </div>
+                <div class="modal-field">
+                    <label>Price per Night</label>
+                    <input id="modalPrice" type="number" placeholder="e.g. 3000">
+                </div>
+                <div class="modal-field">
+                    <label>Type</label>
+                    <select id="modalType">
+                        <option value="hotel">Hotel</option>
+                        <option value="apartment">Apartment</option>
+                        <option value="dorm">Dorm</option>
+                        <option value="guest_room">Guest Room</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-row">
+                <div class="modal-field">
+                    <label>Description</label>
+                    <textarea id="modalDescription" placeholder="Describe your listing..."></textarea>
+                </div>
+                <div class="modal-field">
+                    <label>Contact Number</label>
+                    <input id="modalContact" placeholder="e.g. 09171234567">
+                    <label style="margin-top:15px;">Image URL</label>
+                    <input id="modalImage" placeholder="https://...">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="blue-btn" onclick="submitListing()">POST LISTING</button>
+                <p id="modalMsg"></p>
+            </div>
         </div>
     </div>
 
     <script>
+        let editingId = null;
+
         async function loadMyListings() {
-            // Get all listings and filter by current host (via /me)
+            const search = document.getElementById("searchListings").value.toLowerCase();
+            const res = await fetch("/listings");
+            const all = await res.json();
             const meRes = await fetch("/me");
             const me = await meRes.json();
 
-            const res = await fetch("/listings");
-            const listings = await res.json();
-            const mine = listings.filter(l => l.hostId._id === me.id || l.hostId === me.id);
+            const mine = all.filter(l => l.hostId === me.id);
+            const filtered = mine.filter(l => l.name.toLowerCase().includes(search));
 
-            const container = document.getElementById("listingsContainer");
-            container.innerHTML = "";
+            const grid = document.getElementById("myListingsGrid");
+            grid.innerHTML = "";
 
-            if (mine.length === 0) {
-                container.innerHTML = "<p>No listings yet. <a href='/create-listing'>Create one!</a></p>";
+            if (filtered.length === 0) {
+                grid.innerHTML = "<p>No listings yet.</p>";
                 return;
             }
 
-            mine.forEach(l => {
+            // Check which listings have pending bookings
+            const bookingsRes = await fetch("/bookings/host");
+            const bookings = await bookingsRes.json();
+            const pendingListingIds = new Set(
+                bookings.filter(b => b.status === "pending").map(b => b.listingId._id)
+            );
+
+            filtered.forEach(l => {
+                const hasPending = pendingListingIds.has(l._id);
                 const card = document.createElement("div");
-                card.className = "listing-card";
+                card.className = "listing-card-host";
                 card.innerHTML = `
-                    <h3>${l.name}</h3>
-                    <p>${l.type} — ${l.location}</p>
-                    <p>₱${l.price}/night</p>
-                    <button onclick="openEdit(${JSON.stringify(l).replace(/"/g, '&quot;')})">Edit</button>
-                    <button onclick="deleteListing('${l._id}')">Delete</button>
+                    ${hasPending ? `<div class="pending-badge">PENDING REQUESTS</div>` : ""}
+                    <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
+                    <div class="listing-card-info">
+                        <h3>${l.name}</h3>
+                        <p>${l.location || "Location will appear here"}</p>
+                        <p><strong>${l.price.toLocaleString()}/night</strong></p>
+                        <div class="card-actions">
+                            <button class="outline-btn" onclick="openEdit(${JSON.stringify(l).replace(/"/g, '&quot;')})">EDIT LISTING</button>
+                            <button class="outline-btn" onclick="deleteListing('${l._id}')">DELETE</button>
+                        </div>
+                    </div>
                 `;
-                container.appendChild(card);
+                grid.appendChild(card);
             });
         }
 
+        function openModal() {
+            editingId = null;
+            document.getElementById("modalTitle").textContent = "New Listing";
+            document.getElementById("modalName").value = "";
+            document.getElementById("modalLocation").value = "";
+            document.getElementById("modalPrice").value = "";
+            document.getElementById("modalType").value = "hotel";
+            document.getElementById("modalDescription").value = "";
+            document.getElementById("modalContact").value = "";
+            document.getElementById("modalImage").value = "";
+            document.getElementById("modalMsg").textContent = "";
+            document.getElementById("listingModal").style.display = "flex";
+        }
+
         function openEdit(listing) {
-            document.getElementById("editId").value = listing._id;
-            document.getElementById("editName").value = listing.name;
-            document.getElementById("editType").value = listing.type;
-            document.getElementById("editLocation").value = listing.location;
-            document.getElementById("editPrice").value = listing.price;
-            document.getElementById("editDescription").value = listing.description || "";
-            document.getElementById("editImage").value = listing.image || "";
-            document.getElementById("editContact").value = listing.contactNumber;
-            document.getElementById("editModal").style.display = "flex";
+            editingId = listing._id;
+            document.getElementById("modalTitle").textContent = "Edit Listing";
+            document.getElementById("modalName").value = listing.name;
+            document.getElementById("modalLocation").value = listing.location;
+            document.getElementById("modalPrice").value = listing.price;
+            document.getElementById("modalType").value = listing.type;
+            document.getElementById("modalDescription").value = listing.description || "";
+            document.getElementById("modalContact").value = listing.contactNumber;
+            document.getElementById("modalImage").value = listing.image || "";
+            document.getElementById("modalMsg").textContent = "";
+            document.getElementById("listingModal").style.display = "flex";
         }
 
         function closeModal() {
-            document.getElementById("editModal").style.display = "none";
+            document.getElementById("listingModal").style.display = "none";
         }
 
-        async function saveEdit() {
-            const id = document.getElementById("editId").value;
+        async function submitListing() {
             const data = {
-                name: document.getElementById("editName").value,
-                type: document.getElementById("editType").value,
-                location: document.getElementById("editLocation").value,
-                price: parseFloat(document.getElementById("editPrice").value),
-                description: document.getElementById("editDescription").value,
-                image: document.getElementById("editImage").value,
-                contactNumber: document.getElementById("editContact").value,
+                name: document.getElementById("modalName").value,
+                location: document.getElementById("modalLocation").value,
+                price: parseFloat(document.getElementById("modalPrice").value),
+                type: document.getElementById("modalType").value,
+                description: document.getElementById("modalDescription").value,
+                contactNumber: document.getElementById("modalContact").value,
+                image: document.getElementById("modalImage").value,
             };
 
-            const res = await fetch("/listings/" + id, {
-                method: "PUT",
+            const msg = document.getElementById("modalMsg");
+            const url = editingId ? "/listings/" + editingId : "/listings";
+            const method = editingId ? "PUT" : "POST";
+
+            const res = await fetch(url, {
+                method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             });
@@ -115,7 +189,9 @@
                 closeModal();
                 loadMyListings();
             } else {
-                document.getElementById("editMsg").textContent = "Error saving.";
+                const err = await res.json();
+                msg.textContent = err.message;
+                msg.style.color = "red";
             }
         }
 
@@ -128,4 +204,5 @@
         loadMyListings();
     </script>
 </body>
+
 </html>

@@ -6,55 +6,84 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
-<body id="bookingRequestsPage">
-    <header>
-        <h2>HouseHop</h2>
-        <nav>
+<body id="hostPage">
+
+    <header class="headerz">
+        <img src="/images/logo.png" alt="HouseHop" class="mini-logo">
+        <nav class="nav-buttons">
             <a href="/my-listings">My Listings</a>
-            <a href="/create-listing">+ New Listing</a>
             <a href="/booking-requests">Booking Requests</a>
             <a href="/logout">Logout</a>
         </nav>
     </header>
 
-    <main>
+    <main class="host-main">
         <h1>Booking Requests</h1>
-        <div id="requestsList"></div>
+
+        <div class="host-controls centered">
+            <input id="searchRequests" placeholder="Search by name" oninput="loadRequests()">
+            <select id="filterStatus" onchange="loadRequests()">
+                <option value="">STATUS</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
+
+        <div id="requestsGrid"></div>
     </main>
 
     <script>
         async function loadRequests() {
+            const search = document.getElementById("searchRequests").value.toLowerCase();
+            const filterStatus = document.getElementById("filterStatus").value;
+
             const res = await fetch("/bookings/host");
             const bookings = await res.json();
-            const container = document.getElementById("requestsList");
-            container.innerHTML = "";
 
-            if (bookings.length === 0) {
-                container.innerHTML = "<p>No booking requests yet.</p>";
+            const filtered = bookings.filter(b => {
+                const matchName = b.listingId.name.toLowerCase().includes(search);
+                const matchStatus = filterStatus === "" || b.status === filterStatus;
+                return matchName && matchStatus;
+            });
+
+            const grid = document.getElementById("requestsGrid");
+            grid.innerHTML = "";
+
+            if (filtered.length === 0) {
+                grid.innerHTML = "<p>No booking requests found.</p>";
                 return;
             }
 
-            bookings.forEach(b => {
-                const card = document.createElement("div");
-                card.className = "booking-card";
-
+            filtered.forEach(b => {
                 const start = new Date(b.startDate).toLocaleDateString();
                 const end = new Date(b.endDate).toLocaleDateString();
 
-                const actionButtons = b.status === "pending"
-                    ? `<button onclick="updateStatus('${b._id}', 'approved')">Approve</button>
-                       <button onclick="updateStatus('${b._id}', 'rejected')">Reject</button>`
-                    : `<span>Status: <strong>${b.status.toUpperCase()}</strong></span>`;
+                const card = document.createElement("div");
+                card.className = "request-card";
+
+                let actionHtml = "";
+                if (b.status === "pending") {
+                    actionHtml = `
+                        <button class="approve-btn" onclick="updateStatus('${b._id}', 'approved')">APPROVE</button>
+                        <button class="reject-btn" onclick="updateStatus('${b._id}', 'rejected')">REJECT</button>
+                    `;
+                } else {
+                    actionHtml = `<button class="status-badge status-${b.status}">${b.status.toUpperCase()}</button>`;
+                }
 
                 card.innerHTML = `
-                    <h3>${b.listingId.name}</h3>
-                    <p>Guest: ${b.guestUsername}</p>
-                    <p>Dates: ${start} to ${end}</p>
-                    <p>Status: <span class="status status-${b.status}">${b.status.toUpperCase()}</span></p>
-                    <div class="actions">${actionButtons}</div>
-                    <p class="msgArea" id="msg-${b._id}"></p>
+                    <img src="${b.listingId.image || '/images/placeholder.png'}" alt="${b.listingId.name}">
+                    <div class="request-info">
+                        ${b.status === "pending" ? `<span class="pending-dot">● PENDING</span>` : ""}
+                        <h3>${b.listingId.name}</h3>
+                        <p>Dates: ${start} to ${end}</p>
+                        <p>Guest: ${b.guestUsername}</p>
+                        <div class="card-actions">${actionHtml}</div>
+                        <p class="err-msg" id="msg-${b._id}"></p>
+                    </div>
                 `;
-                container.appendChild(card);
+                grid.appendChild(card);
             });
         }
 
@@ -65,13 +94,12 @@
                 body: JSON.stringify({ status })
             });
 
-            const msgEl = document.getElementById("msg-" + bookingId);
             if (res.ok) {
                 loadRequests();
             } else {
                 const data = await res.json();
-                msgEl.textContent = data.message;
-                msgEl.style.color = "red";
+                const msgEl = document.getElementById("msg-" + bookingId);
+                if (msgEl) { msgEl.textContent = data.message; msgEl.style.color = "red"; }
             }
         }
 
