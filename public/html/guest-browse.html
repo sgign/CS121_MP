@@ -91,6 +91,13 @@
                 return;
             }
 
+            const typeLabels = {
+                hotel: "Hotel",
+                apartment: "Apartment",
+                dorm: "Dorm",
+                guest_room: "Guest Room"
+            };
+
             listings.forEach(l => {
                 const card = document.createElement("div");
                 card.className = "browse-card";
@@ -102,12 +109,19 @@
                 card.innerHTML = `
                     <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
                     <h3>${l.name}</h3>
+<<<<<<< HEAD
                     <div class="badges">
                         <span class="guest-favorite">GUEST FAVORITE</span>
                         <span class="stars">★★★★★</span>
                     </div>
                     <p class="desc">${desc}</p>
                     <p class="price"><strong>${l.price}</strong> for x nights</p>
+=======
+                    <p>${typeLabels[l.type] || l.type} — ${l.location}</p>
+                    <p>₱${l.price}/night</p>
+                    <p>${l.description || ""}</p>
+                    <a href="/booking/${l._id}"><button>Book Now</button></a>
+>>>>>>> e51127a29907b0d56881d874f82cd6282ed3b952
                 `;
                 grid.appendChild(card);
             });

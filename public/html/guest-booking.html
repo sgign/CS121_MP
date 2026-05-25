@@ -44,10 +44,17 @@
             const res = await fetch("/listings/" + listingId);
             const l = await res.json();
 
+            const typeLabels = {
+                hotel: "Hotel",
+                apartment: "Apartment",
+                dorm: "Dorm",
+                guest_room: "Guest Room"
+            };
+
             document.getElementById("listingDetail").innerHTML = `
                 <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
                 <h2>${l.name}</h2>
-                <p>${l.type} — ${l.location}</p>
+                <p>${typeLabels[l.type] || l.type} — ${l.location}</p>
                 <p><strong>₱${l.price}/night</strong></p>
                 <p>${l.description || ""}</p>
             `;

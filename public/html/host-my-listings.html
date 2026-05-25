@@ -111,6 +111,13 @@
                 bookings.filter(b => b.status === "pending").map(b => b.listingId._id)
             );
 
+            const typeLabels = {
+                hotel: "Hotel",
+                apartment: "Apartment",
+                dorm: "Dorm",
+                guest_room: "Guest Room"
+            };
+
             filtered.forEach(l => {
                 const hasPending = pendingListingIds.has(l._id);
                 const card = document.createElement("div");
@@ -120,7 +127,7 @@
                     <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
                     <div class="listing-card-info">
                         <h3>${l.name}</h3>
-                        <p>${l.type} - ${l.location}</p>
+                        <p>${typeLabels[l.type] || l.type} - ${l.location}</p>
                         <p><strong>₱${l.price.toLocaleString()}/night</strong></p>
                         <p>${l.description || ""}</p>
                         <div class="card-actions">

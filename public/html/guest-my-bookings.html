@@ -44,9 +44,16 @@
                     ? `<p>Host Contact: <strong>${listing.contactNumber}</strong></p>`
                     : `<p>Host contact visible after approval.</p>`;
 
+                const typeLabels = {
+                    hotel: "Hotel",
+                    apartment: "Apartment",
+                    dorm: "Dorm",
+                    guest_room: "Guest Room"
+                };
+
                 card.innerHTML = `
                     <h3>${listing.name}</h3>
-                    <p>${listing.location} — ${listing.type}</p>
+                    <p>${listing.location} — ${typeLabels[listing.type] || listing.type}</p>
                     <p>Dates: ${start} to ${end}</p>
                     <p>Status: <span class="status status-${b.status}">${b.status.toUpperCase()}</span></p>
                     ${contactHtml}
