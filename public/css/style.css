@@ -771,60 +771,47 @@ button:hover {
 }
 
 .browse-card {
-    background: white;
-    border-radius: 25px;
+    background: #FFFCF5;
+    border-radius: 30px;
     padding: 15px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
     cursor: pointer;
     transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
 }
 
 .browse-card:hover {
     transform: translateY(-5px);
 }
 
-.browse-card img {
+.browse-card .card-img-wrapper {
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.browse-card .card-img-wrapper img {
     width: 100%;
     height: 180px;
     object-fit: cover;
-    border-radius: 15px;
-    margin-bottom: 15px;
+    display: block;
+    margin: 0;
+    border-radius: 0;
 }
 
 .browse-card h3 {
     font-size: 16px;
     margin: 0 0 10px 0;
-    color: #333;
+    color: #4a4a4a;
     font-weight: 700;
 }
 
-.browse-card .badges {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.browse-card .guest-favorite {
-    background: #e6f0ff;
-    color: #5b9ff0;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 5px 10px;
-    border-radius: 12px;
-    letter-spacing: 0.5px;
-}
-
-.browse-card .stars {
-    color: #f7c325;
-    font-size: 12px;
-    letter-spacing: 1px;
-}
-
 .browse-card .desc {
-    font-size: 11px;
-    color: #777;
-    line-height: 1.5;
+    font-size: 12px;
+    color: #7a7a7a;
+    line-height: 1.4;
     margin: 0 0 15px 0;
     display: -webkit-box;
     -webkit-line-clamp: 3;
@@ -833,14 +820,16 @@ button:hover {
 }
 
 .browse-card .price {
-    font-size: 12px;
+    font-size: 14px;
     color: #4a4a4a;
     margin: 0;
+    font-weight: 700;
 }
 
 .browse-card .price strong {
-    font-size: 13px;
+    font-size: 14px;
     color: #333;
+    font-weight: 700;
 }
 
 /* Filters Dropdown Styles */

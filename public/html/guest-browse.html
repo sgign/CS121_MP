@@ -108,13 +108,12 @@
                 const desc = l.description ? l.description : dummyDesc;
 
                 card.innerHTML = `
-                    <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
+                    <div class="card-img-wrapper">
+                        <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
+                    </div>
                     <h3>${l.name}</h3>
-                    <p>${l.type} — ${l.location}</p>
-                    <p>₱${l.price}/night</p>
-                    <p>${l.description || ""}</p>
-                    <a href="/booking/${l._id}"><button>Book Now</button></a>
->>>>>>> e51127a29907b0d56881d874f82cd6282ed3b952
+                    <p class="desc">${desc}</p>
+                    <p class="price"><strong>${l.price}</strong> for x nights</p>
                 `;
                 grid.appendChild(card);
             });
