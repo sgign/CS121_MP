@@ -18,7 +18,7 @@
     </header>
 
     <main class="host-main">
-        <h1>My Listings</h1>
+        <img src="/images/my-listings.png" alt="My Listings" class="host-title-img">
 
         <div class="host-controls">
             <button class="blue-btn" onclick="openModal()">+ NEW LISTING</button>
@@ -34,7 +34,10 @@
     <div id="listingModal" class="modal-overlay" style="display:none;">
         <div class="modal-box">
             <button class="modal-close" onclick="closeModal()">✕</button>
-            <h2 id="modalTitle">New Listing</h2>
+            <img id="modalTitleImg" src="/images/new-listing.png" alt="New Listing" class="modal-title-img">
+            <h2 id="modalTitleText"
+                style="display:none; color: #5fa8d3; font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px;">
+                Edit Listing</h2>
 
             <input type="hidden" id="editId">
 
@@ -142,7 +145,8 @@
 
         function openModal() {
             editingId = null;
-            document.getElementById("modalTitle").textContent = "New Listing";
+            document.getElementById("modalTitleImg").style.display = "block";
+            document.getElementById("modalTitleText").style.display = "none";
             document.getElementById("modalName").value = "";
             document.getElementById("modalLocation").value = "";
             document.getElementById("modalPrice").value = "";
@@ -156,7 +160,8 @@
 
         function openEdit(listing) {
             editingId = listing._id;
-            document.getElementById("modalTitle").textContent = "Edit Listing";
+            document.getElementById("modalTitleImg").style.display = "none";
+            document.getElementById("modalTitleText").style.display = "block";
             document.getElementById("modalName").value = listing.name;
             document.getElementById("modalLocation").value = listing.location;
             document.getElementById("modalPrice").value = listing.price;

@@ -876,3 +876,17 @@ button:hover {
     font-family: 'Inter', sans-serif;
     color: #4a4a4a;
 }
+
+.host-title-img {
+    height: 85px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 30px auto;
+}
+
+.modal-title-img {
+    height: 60px;
+    object-fit: contain;
+    margin-bottom: 20px;
+    display: block;
+}
