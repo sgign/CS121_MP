@@ -6,6 +6,11 @@ body {
     margin: 0;
     padding: 20px;
     color: #333;
+    background-image: url('../images/Background.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
 }
 
 header {
