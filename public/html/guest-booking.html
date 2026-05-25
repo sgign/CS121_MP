@@ -193,6 +193,12 @@
             thumbnails.forEach((img) => {
                 const srcImg = images[thumbIndex % images.length];
                 img.src = srcImg;
+                
+                img.style.cursor = 'pointer';
+                img.onclick = () => {
+                    document.getElementById("mainImage").src = srcImg;
+                };
+                
                 thumbIndex++;
             });
 
