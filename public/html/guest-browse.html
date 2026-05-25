@@ -63,13 +63,20 @@
                 return;
             }
 
+            const typeLabels = {
+                hotel: "Hotel",
+                apartment: "Apartment",
+                dorm: "Dorm",
+                guest_room: "Guest Room"
+            };
+
             listings.forEach(l => {
                 const card = document.createElement("div");
                 card.className = "listing-card";
                 card.innerHTML = `
                     <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
                     <h3>${l.name}</h3>
-                    <p>${l.type} — ${l.location}</p>
+                    <p>${typeLabels[l.type] || l.type} — ${l.location}</p>
                     <p>₱${l.price}/night</p>
                     <p>${l.description || ""}</p>
                     <a href="/booking/${l._id}"><button>Book Now</button></a>
