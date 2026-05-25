@@ -31,10 +31,11 @@
                 onblur="(this.value==''?this.type='text':this.type='date')">
             <div class="filters-container" style="position: relative;">
                 <button class="btn-filters" onclick="toggleFilters()">
-                    <img src="/images/filter-icon.png" alt="Filter" style="width: 24px; height: 24px; object-fit: contain;">
+                    <img src="/images/filter-icon.png" alt="Filter"
+                        style="width: 24px; height: 24px; object-fit: contain;">
                     FILTERS
                 </button>
-                
+
                 <div id="filterDropdown" class="filter-dropdown" style="display:none;">
                     <div class="filter-group">
                         <label>Type</label>
@@ -109,15 +110,7 @@
                 card.innerHTML = `
                     <img src="${l.image || '/images/placeholder.png'}" alt="${l.name}">
                     <h3>${l.name}</h3>
-<<<<<<< HEAD
-                    <div class="badges">
-                        <span class="guest-favorite">GUEST FAVORITE</span>
-                        <span class="stars">★★★★★</span>
-                    </div>
-                    <p class="desc">${desc}</p>
-                    <p class="price"><strong>${l.price}</strong> for x nights</p>
-=======
-                    <p>${typeLabels[l.type] || l.type} — ${l.location}</p>
+                    <p>${l.type} — ${l.location}</p>
                     <p>₱${l.price}/night</p>
                     <p>${l.description || ""}</p>
                     <a href="/booking/${l._id}"><button>Book Now</button></a>
