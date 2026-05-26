@@ -1339,7 +1339,7 @@ button:hover {
 
 .admin-table th {
     background: #e2effa;
-    padding: 18px 15px;
+    padding: 12px 15px;
     text-align: center;
     font-size: 13px;
     color: #444;
@@ -1348,6 +1348,7 @@ button:hover {
 
 .admin-table td {
     text-align: center;
+    padding: 12px 15px;
     border-bottom: 1px solid #edf2f7;
     font-size: 15px;
     color: #444;
