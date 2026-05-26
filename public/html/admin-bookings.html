@@ -1,56 +1,133 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>HouseHop - Admin: All Bookings</title>
+    <title>HouseHop - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-
-<body id="adminBookingsPage">
-    <header>
-        <h2>HouseHop Admin</h2>
-        <nav>
-            <a href="/admin/listings">All Listings</a>
-            <a href="/admin/bookings">All Bookings</a>
-            <a href="/admin/users">All Users</a>
-            <a href="/logout">Logout</a>
-        </nav>
+<body class="admin-page">
+    <header class="admin-header">
+        <img src="/images/logo.png" alt="HouseHop" class="logo">
+        <a href="/logout" class="logout">Logout</a>
     </header>
 
-    <main>
-        <h1>All Bookings</h1>
-        <div id="bookingsContainer"></div>
+    <main class="admin-main">
+        <h1 class="admin-title">ADMIN DASHBOARD</h1>
+        
+        <div class="admin-tabs-container">
+            <div class="admin-tabs">
+                <a href="/admin/users" class="admin-tab">USERS</a>
+                <a href="/admin/listings" class="admin-tab">LISTINGS</a>
+                <a href="/admin/bookings" class="admin-tab active">BOOKINGS</a>
+            </div>
+            
+            <div class="admin-controls">
+                <input type="text" id="searchGuest" class="admin-search" placeholder="Search by Guest Name" oninput="loadBookings()">
+                <div class="filters-container" style="position: relative;">
+                    <button class="btn-filters" onclick="toggleFilters()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                        FILTERS
+                    </button>
+                    <div id="filterDropdown" class="filter-dropdown" style="display:none; top: 110%;">
+                        <div class="filter-group">
+                            <select id="filterStatus" onchange="loadBookings()">
+                                <option value="">Status</option>
+                                <option value="approved">Approved</option>
+                                <option value="pending">Pending</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>BOOKING ID</th>
+                        <th>LISTING NAME</th>
+                        <th>HOST</th>
+                        <th>GUEST</th>
+                        <th>DATE</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingsContainer">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
     </main>
 
     <script>
+        let allUsers = [];
+
+        function toggleFilters() {
+            const dropdown = document.getElementById('filterDropdown');
+            const btn = document.querySelector('.btn-filters');
+            if (dropdown.style.display === 'none') {
+                dropdown.style.display = 'flex';
+                btn.classList.add('active');
+            } else {
+                dropdown.style.display = 'none';
+                btn.classList.remove('active');
+            }
+        }
+
+        async function init() {
+            const usersRes = await fetch("/admin/users-list");
+            allUsers = await usersRes.json();
+            loadBookings();
+        }
+
         async function loadBookings() {
             const res = await fetch("/bookings/all");
             const bookings = await res.json();
             const container = document.getElementById("bookingsContainer");
+            const searchTerm = document.getElementById("searchGuest").value.toLowerCase();
+            const statusFilter = document.getElementById("filterStatus").value;
+            
             container.innerHTML = "";
 
-            if (bookings.length === 0) {
-                container.innerHTML = "<p>No bookings found.</p>";
+            const filteredBookings = bookings.filter(b => {
+                const matchesSearch = b.guestUsername.toLowerCase().includes(searchTerm);
+                const matchesStatus = statusFilter === "" || b.status === statusFilter;
+                return matchesSearch && matchesStatus;
+            });
+
+            if (filteredBookings.length === 0) {
+                container.innerHTML = "<tr><td colspan='6'>No bookings found.</td></tr>";
                 return;
             }
 
-            bookings.forEach(b => {
-                const card = document.createElement("div");
-                card.className = "booking-card";
-                const start = new Date(b.startDate).toLocaleDateString();
-                const end = new Date(b.endDate).toLocaleDateString();
-                card.innerHTML = `
-                    <p><strong>${b.listingId.name}</strong> (${b.listingId.location})</p>
-                    <p>Guest: ${b.guestUsername}</p>
-                    <p>Dates: ${start} → ${end}</p>
-                    <p>Status: <span class="status status-${b.status}">${b.status.toUpperCase()}</span></p>
+            filteredBookings.forEach(b => {
+                const tr = document.createElement("tr");
+                const start = new Date(b.startDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+                const end = new Date(b.endDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+                
+                // Find host name
+                const hostUser = allUsers.find(u => String(u.id) === String(b.listingId.hostId));
+                const hostName = hostUser ? hostUser.username : b.listingId.hostId;
+                
+                const bookingCode = b.bookingId || "BKG-LEGACY";
+                const statusStr = b.status.toUpperCase();
+                const statusClass = `badge-${b.status}`;
+
+                tr.innerHTML = `
+                    <td><strong>${bookingCode}</strong></td>
+                    <td><strong>${b.listingId.name}</strong></td>
+                    <td>${hostName || 'Unknown'}</td>
+                    <td>${b.guestUsername}</td>
+                    <td>${start} -<br>${end}</td>
+                    <td><span class="admin-badge ${statusClass}">${statusStr}</span></td>
                 `;
-                container.appendChild(card);
+                container.appendChild(tr);
             });
         }
 
-        loadBookings();
+        init();
     </script>
 </body>
-
 </html>

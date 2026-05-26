@@ -1,40 +1,130 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>HouseHop - Admin: Users</title>
+    <title>HouseHop - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body id="adminUsersPage">
-    <header>
-        <h2>HouseHop Admin</h2>
-        <nav>
-            <a href="/admin/listings">All Listings</a>
-            <a href="/admin/bookings">All Bookings</a>
-            <a href="/admin/users">All Users</a>
-            <a href="/logout">Logout</a>
-        </nav>
+<body class="admin-page">
+    <header class="admin-header">
+        <img src="/images/logo.png" alt="HouseHop" class="logo">
+        <a href="/logout" class="logout">Logout</a>
     </header>
 
-    <main>
-        <h1>All Users</h1>
-        <div id="usersContainer"></div>
+    <main class="admin-main">
+        <h1 class="admin-title">ADMIN DASHBOARD</h1>
+        
+        <div class="admin-tabs-container">
+            <div class="admin-tabs">
+                <a href="/admin/users" class="admin-tab active">USERS</a>
+                <a href="/admin/listings" class="admin-tab">LISTINGS</a>
+                <a href="/admin/bookings" class="admin-tab">BOOKINGS</a>
+            </div>
+            
+            <div class="admin-controls">
+                <input type="text" id="searchUser" class="admin-search" placeholder="Search by name" oninput="loadUsers()">
+                <div class="filters-container" style="position: relative;">
+                    <button class="btn-filters" onclick="toggleFilters()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                        FILTERS
+                    </button>
+                    <div id="filterDropdown" class="filter-dropdown" style="display:none; top: 110%;">
+                        <div class="filter-group">
+                            <select id="filterRole" onchange="loadUsers()">
+                                <option value="">Role</option>
+                                <option value="guest">Guest</option>
+                                <option value="host">Host</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <select id="filterStatus" onchange="loadUsers()">
+                                <option value="">Status</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="deleted">Deleted</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>USER NAME</th>
+                        <th>ROLE</th>
+                        <th>JOIN DATE</th>
+                        <th>STATUS</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="usersContainer">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
     </main>
 
     <script>
+        function toggleFilters() {
+            const dropdown = document.getElementById('filterDropdown');
+            const btn = document.querySelector('.btn-filters');
+            if (dropdown.style.display === 'none') {
+                dropdown.style.display = 'flex';
+                btn.classList.add('active');
+            } else {
+                dropdown.style.display = 'none';
+                btn.classList.remove('active');
+            }
+        }
+
         async function loadUsers() {
             const res = await fetch("/admin/users-list");
             const users = await res.json();
             const container = document.getElementById("usersContainer");
+            const searchTerm = document.getElementById("searchUser").value.toLowerCase();
+            const statusFilter = document.getElementById("filterStatus").value;
+            const roleFilter = document.getElementById("filterRole").value;
+            
             container.innerHTML = "";
 
-            users.forEach(u => {
-                const row = document.createElement("div");
-                row.className = "user-row";
-                row.innerHTML = `
-                    <p><strong>${u.username}</strong> — <span class="role-badge role-${u.role}">${u.role.toUpperCase()}</span></p>
-                `;
-                container.appendChild(row);
+            const filteredUsers = users.filter(u => {
+                const matchesSearch = u.username.toLowerCase().includes(searchTerm);
+                const matchesStatus = statusFilter === "" || (u.status && u.status === statusFilter);
+                const matchesRole = roleFilter === "" || u.role === roleFilter;
+                return matchesSearch && matchesStatus && matchesRole;
             });
+
+            if (filteredUsers.length === 0) {
+                container.innerHTML = "<tr><td colspan='5'>No users found.</td></tr>";
+                return;
+            }
+
+            filteredUsers.forEach(u => {
+                const tr = document.createElement("tr");
+                const statusStr = u.status ? u.status.toUpperCase() : 'ACTIVE';
+                const statusClass = u.status ? `badge-${u.status}` : 'badge-active';
+                const joinDate = u.joinDate || 'N/A';
+                
+                tr.innerHTML = `
+                    <td><strong>${u.username}</strong></td>
+                    <td style="text-transform: capitalize;">${u.role}</td>
+                    <td>${joinDate}</td>
+                    <td><span class="admin-badge ${statusClass}">${statusStr}</span></td>
+                    <td>
+                        <button class="action-btn" onclick="deleteUser('${u.id}')" title="Delete User">🗑️</button>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+        }
+
+        function deleteUser(id) {
+            // Placeholder for delete user logic
+            alert('Delete user: ' + id);
         }
 
         loadUsers();

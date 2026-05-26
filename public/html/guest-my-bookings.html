@@ -69,10 +69,13 @@
                 const statusClass = b.status === "pending" ? "badge-status-pending" : (b.status === "rejected" ? "badge-status-rejected" : "badge-status-approved");
                 const locationText = listing.location || "Location will appear here";
 
+                const bookingCode = b.bookingId || "BKG-LEGACY";
+
                 card.innerHTML = `
                     <img src="${imageUrl}" alt="${listing.name}">
                     <div class="booking-horizontal-content">
                         <div>
+                            <p style="font-size: 12px; font-weight: 700; color: #ff385c; letter-spacing: 0.5px; margin-bottom: 4px;">ID: ${bookingCode}</p>
                             <h3 class="booking-horizontal-title">${listing.name}</h3>
                             <p class="booking-horizontal-desc">${locationText}</p>
                             <p class="booking-horizontal-price">${listing.price.toLocaleString()}/night</p>

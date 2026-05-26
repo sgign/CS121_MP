@@ -1,55 +1,170 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>HouseHop - Admin: Listings</title>
+    <title>HouseHop - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body id="adminListingsPage">
-    <header>
-        <h2>HouseHop Admin</h2>
-        <nav>
-            <a href="/admin/listings">All Listings</a>
-            <a href="/admin/bookings">All Bookings</a>
-            <a href="/admin/users">All Users</a>
-            <a href="/logout">Logout</a>
-        </nav>
+<body class="admin-page">
+    <header class="admin-header">
+        <img src="/images/logo.png" alt="HouseHop" class="logo">
+        <a href="/logout" class="logout">Logout</a>
     </header>
 
-    <main>
-        <h1>Manage All Listings</h1>
-        <div id="listingsContainer"></div>
+    <main class="admin-main">
+        <h1 class="admin-title">ADMIN DASHBOARD</h1>
+        
+        <div class="admin-tabs-container">
+            <div class="admin-tabs">
+                <a href="/admin/users" class="admin-tab">USERS</a>
+                <a href="/admin/listings" class="admin-tab active">LISTINGS</a>
+                <a href="/admin/bookings" class="admin-tab">BOOKINGS</a>
+            </div>
+            
+            <div class="admin-controls">
+                <input type="text" id="searchListing" class="admin-search" placeholder="Search by Listing Name" oninput="loadListings()">
+                <div class="filters-container" style="position: relative;">
+                    <button class="btn-filters" onclick="toggleFilters()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                        FILTERS
+                    </button>
+                    <div id="filterDropdown" class="filter-dropdown" style="display:none; top: 110%;">
+                        <div class="filter-group">
+                            <select id="filterType" onchange="loadListings()">
+                                <option value="">Type</option>
+                                <option value="hotel">Hotel</option>
+                                <option value="apartment">Apartment</option>
+                                <option value="dorm">Dorm</option>
+                                <option value="guest_room">Guest Room</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <select id="filterPrice" onchange="loadListings()">
+                                <option value="">Price</option>
+                                <option value="price_asc">Ascending</option>
+                                <option value="price_desc">Descending</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <select id="filterStatus" onchange="loadListings()">
+                                <option value="">Status</option>
+                                <option value="approved">Approved</option>
+                                <option value="pending">Pending</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>UPLOAD PHOTO</th>
+                        <th>LISTING NAME</th>
+                        <th>HOST</th>
+                        <th>TYPE</th>
+                        <th>PRICE</th>
+                        <th>STATUS</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="listingsContainer">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
     </main>
 
     <script>
+        let allUsers = [];
+
+        function toggleFilters() {
+            const dropdown = document.getElementById('filterDropdown');
+            const btn = document.querySelector('.btn-filters');
+            if (dropdown.style.display !== 'flex') {
+                dropdown.style.display = 'flex';
+                btn.classList.add('active');
+            } else {
+                dropdown.style.display = 'none';
+                btn.classList.remove('active');
+            }
+        }
+
+        async function init() {
+            const usersRes = await fetch("/admin/users-list");
+            allUsers = await usersRes.json();
+            loadListings();
+        }
+
         async function loadListings() {
             const res = await fetch("/listings");
-            const listings = await res.json();
+            let listings = await res.json();
             const container = document.getElementById("listingsContainer");
+            const searchTerm = document.getElementById("searchListing").value.toLowerCase();
+            const typeFilter = document.getElementById("filterType").value;
+            const priceFilter = document.getElementById("filterPrice").value;
+            // Notice: We map statusFilter later during rendering since status is mocked in UI
+            const statusFilter = document.getElementById("filterStatus").value;
+            
             container.innerHTML = "";
 
-            if (listings.length === 0) {
-                container.innerHTML = "<p>No listings found.</p>";
+            if (priceFilter === "price_asc") {
+                listings.sort((a, b) => a.price - b.price);
+            } else if (priceFilter === "price_desc") {
+                listings.sort((a, b) => b.price - a.price);
+            }
+
+            let filteredListings = listings.filter(l => {
+                const matchesSearch = l.name.toLowerCase().includes(searchTerm);
+                const matchesType = typeFilter === "" || l.type === typeFilter;
+                return matchesSearch && matchesType;
+            });
+
+            if (filteredListings.length === 0) {
+                container.innerHTML = "<tr><td colspan='7'>No listings found.</td></tr>";
                 return;
             }
 
-            listings.forEach(l => {
-                const card = document.createElement("div");
-                card.className = "listing-card";
-                const typeLabels = {
-                    hotel: "Hotel",
-                    apartment: "Apartment",
-                    dorm: "Dorm",
-                    guest_room: "Guest Room"
-                };
+            const typeLabels = {
+                hotel: "Hotel",
+                apartment: "Apartment",
+                dorm: "Dorm",
+                guest_room: "Guest Room"
+            };
 
-                card.innerHTML = `
-                    <h3>${l.name}</h3>
-                    <p>${typeLabels[l.type] || l.type} — ${l.location}</p>
-                    <p>₱${l.price}/night</p>
-                    <p>Host: ${l.hostId.username}</p>
-                    <button onclick="deleteListing('${l._id}')">Delete</button>
+            filteredListings.forEach(l => {
+                const mockStatuses = ["approved", "pending", "rejected"];
+                const mockStatus = mockStatuses[l.name.length % 3];
+                
+                if (statusFilter !== "" && mockStatus !== statusFilter) {
+                    return;
+                }
+
+                const tr = document.createElement("tr");
+                const imageUrl = (l.images && l.images.length > 0) ? l.images[0] : (l.image || '/images/placeholder.png');
+                
+                // Find host name
+                const hostUser = allUsers.find(u => String(u.id) === String(l.hostId));
+                const hostName = hostUser ? hostUser.username : l.hostId;
+
+                const statusStr = mockStatus.toUpperCase();
+                const statusClass = `badge-${mockStatus}`;
+
+                tr.innerHTML = `
+                    <td><img src="${imageUrl}" alt="${l.name}"></td>
+                    <td><strong>${l.name}</strong></td>
+                    <td>${hostName}</td>
+                    <td>${typeLabels[l.type] || l.type}</td>
+                    <td>${l.price.toLocaleString()} for<br>x nights</td>
+                    <td><span class="admin-badge ${statusClass}">${statusStr}</span></td>
+                    <td>
+                        <button class="action-btn" onclick="deleteListing('${l._id}')" title="Delete Listing">🗑️</button>
+                    </td>
                 `;
-                container.appendChild(card);
+                container.appendChild(tr);
             });
         }
 
@@ -59,7 +174,7 @@
             loadListings();
         }
 
-        loadListings();
+        init();
     </script>
 </body>
 </html>

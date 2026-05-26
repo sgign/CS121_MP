@@ -46,6 +46,7 @@ const Listing = mongoose.model("Listing", listingSchema);
 
 // BOOKING
 const bookingSchema = new mongoose.Schema({
+    bookingId: { type: String, unique: true },
     listingId: { type: mongoose.Schema.Types.ObjectId, ref: "Listing", required: true },
     guestId: { type: String, required: true },
     startDate: { type: Date, required: true },
@@ -186,12 +187,12 @@ app.get("/listings", isAuthenticated, async (req, res) => {
     if (sort === "price_desc") sortObj.price = -1;
 
     const listings = await Listing.find(query).sort(sortObj);
-    
+
     let result = listings.map(l => l.toObject());
     if (req.session.user.role === "guest") {
         result.forEach(r => r.contactNumber = undefined);
     }
-    
+
     res.json(result);
 });
 
@@ -326,7 +327,19 @@ app.post("/bookings", isAuthenticated, requireRole("guest"), async (req, res) =>
         return res.status(409).json({ message: "These dates overlap with an existing approved booking" });
     }
 
+    let isUnique = false;
+    let generatedBookingId = "";
+    while (!isUnique) {
+        const randomDigits = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
+        generatedBookingId = `BKG-${randomDigits}`;
+        const existing = await Booking.findOne({ bookingId: generatedBookingId });
+        if (!existing) {
+            isUnique = true;
+        }
+    }
+
     const booking = await Booking.create({
+        bookingId: generatedBookingId,
         listingId,
         guestId: req.session.user.id,
         startDate: start,
