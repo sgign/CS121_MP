@@ -182,7 +182,7 @@ app.get("/admin/users", isAuthenticated, requireRole("admin"), (req, res) => {
 
 // GET /listings — with search, filter, sort
 app.get("/listings", isAuthenticated, async (req, res) => {
-    const { search, location, type, sort } = req.query;
+    const { search, location, type, sort, checkin, checkout } = req.query;
 
     let query = {};
     if (search) query.name = { $regex: search, $options: "i" };
@@ -193,7 +193,22 @@ app.get("/listings", isAuthenticated, async (req, res) => {
     if (sort === "price_asc") sortObj.price = 1;
     if (sort === "price_desc") sortObj.price = -1;
 
-    const listings = await Listing.find(query).sort(sortObj);
+    let listings = await Listing.find(query).sort(sortObj);
+
+    if (checkin && checkout) {
+        const checkinDate = new Date(checkin);
+        const checkoutDate = new Date(checkout);
+        
+        const overlappingBookings = await Booking.find({
+            status: "approved",
+            $or: [
+                { startDate: { $lt: checkoutDate }, endDate: { $gt: checkinDate } }
+            ]
+        });
+        
+        const bookedListingIds = overlappingBookings.map(b => b.listingId.toString());
+        listings = listings.filter(l => !bookedListingIds.includes(l._id.toString()));
+    }
 
     let result = listings.map(l => l.toObject());
     if (req.session.user.role === "guest") {

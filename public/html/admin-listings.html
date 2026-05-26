@@ -45,14 +45,6 @@
                                 <option value="price_desc">Descending</option>
                             </select>
                         </div>
-                        <div class="filter-group">
-                            <select id="filterStatus" onchange="loadListings()">
-                                <option value="">Status</option>
-                                <option value="approved">Approved</option>
-                                <option value="pending">Pending</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -67,7 +59,6 @@
                         <th>HOST</th>
                         <th>TYPE</th>
                         <th>PRICE</th>
-                        <th>STATUS</th>
                         <th>ACTIONS</th>
                     </tr>
                 </thead>
@@ -106,9 +97,6 @@
             const searchTerm = document.getElementById("searchListing").value.toLowerCase();
             const typeFilter = document.getElementById("filterType").value;
             const priceFilter = document.getElementById("filterPrice").value;
-            // Notice: We map statusFilter later during rendering since status is mocked in UI
-            const statusFilter = document.getElementById("filterStatus").value;
-            
             container.innerHTML = "";
 
             if (priceFilter === "price_asc") {
@@ -136,13 +124,6 @@
             };
 
             filteredListings.forEach(l => {
-                const mockStatuses = ["approved", "pending", "rejected"];
-                const mockStatus = mockStatuses[l.name.length % 3];
-                
-                if (statusFilter !== "" && mockStatus !== statusFilter) {
-                    return;
-                }
-
                 const tr = document.createElement("tr");
                 const imageUrl = (l.images && l.images.length > 0) ? l.images[0] : (l.image || '/images/placeholder.png');
                 
@@ -150,16 +131,12 @@
                 const hostUser = allUsers.find(u => String(u.id) === String(l.hostId));
                 const hostName = hostUser ? hostUser.username : l.hostId;
 
-                const statusStr = mockStatus.toUpperCase();
-                const statusClass = `badge-${mockStatus}`;
-
                 tr.innerHTML = `
                     <td><img src="${imageUrl}" alt="${l.name}"></td>
                     <td><strong>${l.name}</strong></td>
                     <td>${hostName}</td>
                     <td>${typeLabels[l.type] || l.type}</td>
                     <td>₱${l.price.toLocaleString()}/night</td>
-                    <td><span class="admin-badge ${statusClass}">${statusStr}</span></td>
                     <td>
                         <button class="action-btn" onclick="deleteListing('${l._id}')" title="Delete Listing">🗑️</button>
                     </td>

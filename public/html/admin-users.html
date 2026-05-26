@@ -58,7 +58,6 @@
                         <th>ROLE</th>
                         <th>JOIN DATE</th>
                         <th>STATUS</th>
-                        <th>ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody id="usersContainer">
@@ -99,7 +98,7 @@
             });
 
             if (filteredUsers.length === 0) {
-                container.innerHTML = "<tr><td colspan='5'>No users found.</td></tr>";
+                container.innerHTML = "<tr><td colspan='4'>No users found.</td></tr>";
                 return;
             }
 
@@ -114,9 +113,6 @@
                     <td style="text-transform: capitalize;">${u.role}</td>
                     <td>${joinDate}</td>
                     <td><span class="admin-badge ${statusClass}">${statusStr}</span></td>
-                    <td>
-                        <button class="action-btn" onclick="deleteUser('${u.id}')" title="Delete User">🗑️</button>
-                    </td>
                 `;
                 container.appendChild(tr);
             });
