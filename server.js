@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const path = require("path");
 const fs = require("fs");
-
+const crypto = require("crypto");
 const app = express();
 
 app.use(express.json({ limit: '50mb' }));
@@ -360,8 +360,8 @@ app.post("/bookings", isAuthenticated, requireRole("guest"), async (req, res) =>
     let isUnique = false;
     let generatedBookingId = "";
     while (!isUnique) {
-        const randomDigits = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
-        generatedBookingId = `BKG-${randomDigits}`;
+        const randomHex = crypto.randomBytes(4).toString("hex").toUpperCase();
+        generatedBookingId = `BKG-${randomHex}`;
         const existing = await Booking.findOne({ bookingId: generatedBookingId });
         if (!existing) {
             isUnique = true;
