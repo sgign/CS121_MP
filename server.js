@@ -320,7 +320,7 @@ app.get("/bookings/host", isAuthenticated, requireRole("host"), async (req, res)
 
 // GET /bookings/all -- admin sees all bookings
 app.get("/bookings/all", isAuthenticated, requireRole("admin"), async (req, res) => {
-    const bookings = await Booking.find().populate("listingId", "name location image");
+    const bookings = await Booking.find().populate("listingId", "name location image hostId");
     const result = bookings.map(b => {
         const obj = b.toObject();
         const user = USERS.find(u => u.id === b.guestId);
