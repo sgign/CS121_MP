@@ -3,8 +3,10 @@
 
 <head>
     <title>HouseHop - My Listings</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/images/househop-tab-icon.png">
 </head>
 
 <body id="hostPage">
@@ -36,8 +38,11 @@
     <div id="listingModal" class="modal-overlay" style="display:none;">
         <div class="modal-box">
             <button class="modal-close" onclick="closeModal()">✕</button>
-            <img id="modalTitleImg" src="/images/new-listing.png" alt="New Listing" style="display:none; max-height: 60px; object-fit: contain; margin-bottom: 20px;">
-            <h2 id="modalTitleText" style="display:none; color: #5fa8d3; font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px;">Edit Listing</h2>
+            <img id="modalTitleImg" src="/images/new-listing.png" alt="New Listing"
+                style="display:none; max-height: 60px; object-fit: contain; margin-bottom: 20px;">
+            <h2 id="modalTitleText"
+                style="display:none; color: #5fa8d3; font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px;">
+                Edit Listing</h2>
 
             <input type="hidden" id="editId">
 
@@ -76,7 +81,8 @@
                     <input id="modalContact" oninput="validateContactInput(this)" placeholder="e.g. 09171234567">
                     <label style="margin-top:15px;">Upload Photos (or URL)</label>
                     <input id="modalImage" placeholder="https://..." style="margin-bottom: 5px;">
-                    <input id="modalImageFile" type="file" multiple accept="image/*" onchange="previewModalImage(event)" style="font-size: 12px; margin-bottom: 5px;">
+                    <input id="modalImageFile" type="file" multiple accept="image/*" onchange="previewModalImage(event)"
+                        style="font-size: 12px; margin-bottom: 5px;">
                     <div id="modalImageGallery" style="display:flex; flex-wrap:wrap; gap:10px; margin-top: 5px;"></div>
                 </div>
             </div>
@@ -121,14 +127,14 @@
             const gallery = document.getElementById('modalImageGallery');
             gallery.innerHTML = '';
             uploadedImageUrls = [];
-            
+
             if (files.length > 0) {
                 document.getElementById('modalImage').value = ""; // Clear URL if files uploaded
             }
 
             files.forEach(file => {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const dataUrl = e.target.result;
                     uploadedImageUrls.push(dataUrl);
                     const img = document.createElement('img');
@@ -228,12 +234,12 @@
             document.getElementById("modalContact").value = listing.contactNumber;
             document.getElementById("modalImage").value = listing.image || "";
             document.getElementById("modalImageFile").value = "";
-            
+
             const gallery = document.getElementById("modalImageGallery");
             gallery.innerHTML = "";
             let editImages = listing.images && listing.images.length > 0 ? listing.images : (listing.image ? [listing.image] : []);
             uploadedImageUrls = [...editImages];
-            
+
             editImages.forEach(imgUrl => {
                 const img = document.createElement('img');
                 img.src = imgUrl;
@@ -268,7 +274,7 @@
             if (finalImages.length === 0 && document.getElementById("modalImage").value) {
                 finalImages.push(document.getElementById("modalImage").value);
             }
-            
+
             const data = {
                 name: document.getElementById("modalName").value,
                 location: document.getElementById("modalLocation").value,

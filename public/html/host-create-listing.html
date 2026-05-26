@@ -3,8 +3,10 @@
 
 <head>
     <title>HouseHop - Create Listing</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/images/househop-tab-icon.png">
 </head>
 
 <body id="createListingPage">
@@ -101,7 +103,7 @@
             toast.textContent = message;
             toast.className = "toast-notification " + (isError ? "error" : "success");
             toast.classList.add("show");
-            
+
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => {
                 toast.classList.remove("show");

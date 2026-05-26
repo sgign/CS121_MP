@@ -3,8 +3,10 @@
 
 <head>
     <title>HouseHop - Booking Requests</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/images/househop-tab-icon.png">
 </head>
 
 <body id="hostPage">
@@ -21,25 +23,39 @@
     <main class="host-main">
         <img src="/images/booking-requests.png" alt="Booking Requests" class="host-title-img">
 
-        <div class="controls browse-controls" style="justify-content: center; max-width: 100%; margin: 0 auto 50px auto; gap: 15px;">
-            <input id="searchRequests" placeholder="Search by name" oninput="loadRequests()" style="flex: unset; width: 220px; border-radius: 40px; padding: 12px 20px; font-size: 14px; outline: none; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-            
+        <div class="controls browse-controls"
+            style="justify-content: center; max-width: 100%; margin: 0 auto 50px auto; gap: 15px;">
+            <input id="searchRequests" placeholder="Search by name" oninput="loadRequests()"
+                style="flex: unset; width: 220px; border-radius: 40px; padding: 12px 20px; font-size: 14px; outline: none; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+
             <div class="filters-container" style="position: relative;">
-                <button id="statusBtn" class="btn-filters" onclick="toggleStatusDropdown()" style="width: auto; padding: 12px 40px 12px 24px; font-size: 14px; cursor: pointer; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px center; background-size: 10px auto; border: none; text-align: left; display: block;">
+                <button id="statusBtn" class="btn-filters" onclick="toggleStatusDropdown()"
+                    style="width: auto; padding: 12px 40px 12px 24px; font-size: 14px; cursor: pointer; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px center; background-size: 10px auto; border: none; text-align: left; display: block;">
                     All Statuses
                 </button>
-                <div id="statusDropdown" class="filter-dropdown" style="display:none; padding: 10px; width: 160px; left: 0; right: auto;">
-                    <div style="padding: 10px 12px; cursor: pointer; color: #555; border-radius: 8px; transition: background 0.2s; font-family: 'Inter', sans-serif;" onclick="selectStatus('', 'All Statuses')" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">All Statuses</div>
-                    <div style="padding: 10px 12px; cursor: pointer; color: #555; border-radius: 8px; transition: background 0.2s; font-family: 'Inter', sans-serif;" onclick="selectStatus('approved', 'Approved')" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">Approved</div>
-                    <div style="padding: 10px 12px; cursor: pointer; color: #555; border-radius: 8px; transition: background 0.2s; font-family: 'Inter', sans-serif;" onclick="selectStatus('pending', 'Pending')" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">Pending</div>
-                    <div style="padding: 10px 12px; cursor: pointer; color: #555; border-radius: 8px; transition: background 0.2s; font-family: 'Inter', sans-serif;" onclick="selectStatus('rejected', 'Rejected')" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">Rejected</div>
+                <div id="statusDropdown" class="filter-dropdown"
+                    style="display:none; padding: 10px; width: 160px; left: 0; right: auto;">
+                    <div style="padding: 10px 12px; cursor: pointer; color: #555; border-radius: 8px; transition: background 0.2s; font-family: 'Inter', sans-serif;"
+                        onclick="selectStatus('', 'All Statuses')" onmouseover="this.style.background='#f0f0f0'"
+                        onmouseout="this.style.background='transparent'">All Statuses</div>
+                    <div style="padding: 10px 12px; cursor: pointer; color: #555; border-radius: 8px; transition: background 0.2s; font-family: 'Inter', sans-serif;"
+                        onclick="selectStatus('approved', 'Approved')" onmouseover="this.style.background='#f0f0f0'"
+                        onmouseout="this.style.background='transparent'">Approved</div>
+                    <div style="padding: 10px 12px; cursor: pointer; color: #555; border-radius: 8px; transition: background 0.2s; font-family: 'Inter', sans-serif;"
+                        onclick="selectStatus('pending', 'Pending')" onmouseover="this.style.background='#f0f0f0'"
+                        onmouseout="this.style.background='transparent'">Pending</div>
+                    <div style="padding: 10px 12px; cursor: pointer; color: #555; border-radius: 8px; transition: background 0.2s; font-family: 'Inter', sans-serif;"
+                        onclick="selectStatus('rejected', 'Rejected')" onmouseover="this.style.background='#f0f0f0'"
+                        onmouseout="this.style.background='transparent'">Rejected</div>
                 </div>
             </div>
             <input type="hidden" id="filterStatus" value="">
 
             <div class="filters-container" style="position: relative;">
-                <button class="btn-filters" onclick="toggleFilters()" style="padding: 12px 24px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
-                    <img src="/images/filter-icon.png" alt="Filter" style="width: 18px; height: 18px; object-fit: contain;">
+                <button class="btn-filters" onclick="toggleFilters()"
+                    style="padding: 12px 24px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                    <img src="/images/filter-icon.png" alt="Filter"
+                        style="width: 18px; height: 18px; object-fit: contain;">
                     FILTERS
                 </button>
                 <div id="filterDropdown" class="filter-dropdown" style="display:none;">
@@ -94,7 +110,7 @@
         }
 
         // Close dropdowns when clicking outside
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             const statusContainer = document.querySelector('.filters-container:nth-child(2)');
             if (statusContainer && !statusContainer.contains(event.target)) {
                 document.getElementById('statusDropdown').style.display = 'none';
@@ -121,7 +137,7 @@
                 const matchType = filterType === "" || b.listingId.type === filterType;
                 return matchName && matchStatus && matchType;
             });
-            
+
             if (filterSort === "price_asc") {
                 filtered.sort((a, b) => a.listingId.price - b.listingId.price);
             } else if (filterSort === "price_desc") {

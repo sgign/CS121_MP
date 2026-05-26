@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>HouseHop - Book Listing</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Luckiest+Guy&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Luckiest+Guy&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/images/househop-tab-icon.png">
 </head>
+
 <body id="bookingPage">
     <header class="main-header">
         <img src="/images/logo.png" alt="HouseHop" class="header-logo">
@@ -33,12 +39,12 @@
             <!-- Right Side: Details & Booking -->
             <div class="booking-right">
                 <h1 id="listingTitle">Loading...</h1>
-                
 
-                
+
+
                 <p id="listingDesc" class="desc">Loading description...</p>
                 <p class="price"><strong>₱<span id="listingPrice">...</span></strong> per night</p>
-                
+
                 <div class="booking-form-inline">
                     <div class="date-inputs">
                         <div class="input-group">
@@ -70,8 +76,9 @@
                         <li><strong>Property Type:</strong> <span id="listingType">...</span></li>
                         <li><strong>Contact Host:</strong> <span id="listingContact">...</span></li>
                     </ul>
-                    
-                    <h2 style="margin-top: 30px; font-size: 22px; font-weight: 600; margin-bottom: 24px;">What this place offers</h2>
+
+                    <h2 style="margin-top: 30px; font-size: 22px; font-weight: 600; margin-bottom: 24px;">What this
+                        place offers</h2>
                     <div class="amenities-grid">
                         <div class="amenity-item">
                             <span class="material-symbols-outlined">restaurant</span>
@@ -113,7 +120,7 @@
                             <span class="material-symbols-outlined">videocam</span>
                             <span>Exterior security cameras on property</span>
                         </div>
-                        
+
                         <!-- Hidden amenities -->
                         <div class="amenity-item hidden-amenity" style="display: none;">
                             <span class="material-symbols-outlined">hot_tub</span>
@@ -155,30 +162,38 @@
     </main>
 
     <!-- Booking Success Modal -->
-    <div id="bookingSuccessModal" class="modal-overlay" style="display: none; align-items: center; justify-content: center;">
-        <div class="modal-box" style="background: #cde6fd; max-width: 550px; text-align: center; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
-            <img src="/images/booking-confirmed.png" alt="BOOKING CONFIRMED!" style="max-width: 100%; height: auto; margin-bottom: 20px; object-fit: contain;">
-            <p style="font-size: 18px; color: #555; margin-bottom: 35px; line-height: 1.4;">Your booking has been sent to the host and its status is now Pending for approval</p>
+    <div id="bookingSuccessModal" class="modal-overlay"
+        style="display: none; align-items: center; justify-content: center;">
+        <div class="modal-box"
+            style="background: #cde6fd; max-width: 550px; text-align: center; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            <img src="/images/booking-confirmed.png" alt="BOOKING CONFIRMED!"
+                style="max-width: 100%; height: auto; margin-bottom: 20px; object-fit: contain;">
+            <p style="font-size: 18px; color: #555; margin-bottom: 35px; line-height: 1.4;">Your booking has been sent
+                to the host and its status is now Pending for approval</p>
             <div style="display: flex; justify-content: center; gap: 20px;">
-                <button onclick="window.location.href='/browse'" style="background: #eaf4ff; border: 2px solid #5fa8d3; color: #5fa8d3; padding: 12px 25px; border-radius: 50px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; letter-spacing: 0.5px;">KEEP BROWSING</button>
-                <button onclick="window.location.href='/my-bookings'" style="background: #eaf4ff; border: 2px solid #5fa8d3; color: #5fa8d3; padding: 12px 25px; border-radius: 50px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; letter-spacing: 0.5px;">GO TO MY BOOKINGS</button>
+                <button onclick="window.location.href='/browse'"
+                    style="background: #eaf4ff; border: 2px solid #5fa8d3; color: #5fa8d3; padding: 12px 25px; border-radius: 50px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; letter-spacing: 0.5px;">KEEP
+                    BROWSING</button>
+                <button onclick="window.location.href='/my-bookings'"
+                    style="background: #eaf4ff; border: 2px solid #5fa8d3; color: #5fa8d3; padding: 12px 25px; border-radius: 50px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; letter-spacing: 0.5px;">GO
+                    TO MY BOOKINGS</button>
             </div>
         </div>
     </div>
 
     <script>
         let amenitiesExpanded = false;
-        
+
         function toggleAmenities() {
             const hiddenItems = document.querySelectorAll('.hidden-amenity');
             const btn = document.querySelector('.show-all-amenities-btn');
-            
+
             amenitiesExpanded = !amenitiesExpanded;
-            
+
             hiddenItems.forEach(item => {
                 item.style.display = amenitiesExpanded ? 'flex' : 'none';
             });
-            
+
             btn.textContent = amenitiesExpanded ? "Show fewer amenities" : "Show all 18 amenities";
         }
 
@@ -196,9 +211,9 @@
             } else {
                 images = ['/images/placeholder.png'];
             }
-            
+
             document.getElementById("mainImage").src = images[0];
-            
+
             // Populate thumbnails with available images, fill rest with placeholder
             const thumbnails = document.querySelectorAll('.thumbnail');
             let thumbIndex = 0; // start from 1st image
@@ -214,15 +229,15 @@
             });
 
             document.getElementById("listingTitle").textContent = l.name;
-            
+
             document.getElementById("listingDesc").textContent = l.description || "";
-            
+
             document.getElementById("listingPrice").textContent = l.price.toLocaleString();
-            
+
             // Populate expanded info
             document.getElementById("fullDescription").textContent = l.description || "No description provided.";
             document.getElementById("listingLocation").textContent = l.location || "N/A";
-            
+
             const typeLabels = {
                 hotel: "Hotel",
                 apartment: "Apartment",
@@ -263,4 +278,5 @@
         loadListing();
     </script>
 </body>
+
 </html>

@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>HouseHop - Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/images/househop-tab-icon.png">
 </head>
+
 <body class="admin-page">
     <header class="admin-header">
         <img src="/images/logo.png" alt="HouseHop" class="logo">
@@ -13,19 +17,23 @@
 
     <main class="admin-main">
         <h1 class="admin-title">ADMIN DASHBOARD</h1>
-        
+
         <div class="admin-tabs-container">
             <div class="admin-tabs">
                 <a href="/admin/users" class="admin-tab">USERS</a>
                 <a href="/admin/listings" class="admin-tab active">LISTINGS</a>
                 <a href="/admin/bookings" class="admin-tab">BOOKINGS</a>
             </div>
-            
+
             <div class="admin-controls">
-                <input type="text" id="searchListing" class="admin-search" placeholder="Search by Listing Name" oninput="loadListings()">
+                <input type="text" id="searchListing" class="admin-search" placeholder="Search by Listing Name"
+                    oninput="loadListings()">
                 <div class="filters-container" style="position: relative;">
                     <button class="btn-filters" onclick="toggleFilters()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
                         FILTERS
                     </button>
                     <div id="filterDropdown" class="filter-dropdown" style="display:none; top: 110%;">
@@ -126,7 +134,7 @@
             filteredListings.forEach(l => {
                 const tr = document.createElement("tr");
                 const imageUrl = (l.images && l.images.length > 0) ? l.images[0] : (l.image || '/images/placeholder.png');
-                
+
                 // Find host name
                 const hostUser = allUsers.find(u => String(u.id) === String(l.hostId));
                 const hostName = hostUser ? hostUser.username : l.hostId;
@@ -154,4 +162,5 @@
         init();
     </script>
 </body>
+
 </html>

@@ -6,6 +6,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/images/househop-tab-icon.png">
 </head>
 
 <body id="browsePage">
@@ -24,15 +25,19 @@
             <p>Where we hopping to today?</p>
         </div>
 
-        <div class="controls browse-controls" style="flex-wrap: nowrap; align-items: center; justify-content: center; gap: 15px; width: 100%; max-width: 1200px; padding: 0 20px; box-sizing: border-box;">
+        <div class="controls browse-controls"
+            style="flex-wrap: nowrap; align-items: center; justify-content: center; gap: 15px; width: 100%; max-width: 1200px; padding: 0 20px; box-sizing: border-box;">
             <input id="search" placeholder="Search by name" oninput="loadListings()" style="flex: 1; min-width: 120px;">
             <input id="location" placeholder="Location" oninput="loadListings()" style="flex: 1; min-width: 100px;">
-            <div class="date-range-container" style="display: flex; align-items: center; border-radius: 50px; background: rgba(255, 255, 255, 0.95); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); padding: 0 15px; flex: 1.5; min-width: 240px; box-sizing: border-box;">
+            <div class="date-range-container"
+                style="display: flex; align-items: center; border-radius: 50px; background: rgba(255, 255, 255, 0.95); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); padding: 0 15px; flex: 1.5; min-width: 240px; box-sizing: border-box;">
                 <input id="checkin" type="text" placeholder="Check In" onfocus="(this.type='date')"
-                    onblur="(this.value==''?this.type='text':this.type='date')" onchange="loadListings()" style="border: none; box-shadow: none; min-width: unset; width: 100%; flex: 1; padding: 18px 5px; background: transparent; text-align: center;">
+                    onblur="(this.value==''?this.type='text':this.type='date')" onchange="loadListings()"
+                    style="border: none; box-shadow: none; min-width: unset; width: 100%; flex: 1; padding: 18px 5px; background: transparent; text-align: center;">
                 <span style="color: #b0b0b0; font-family: 'Inter', sans-serif;">-</span>
                 <input id="checkout" type="text" placeholder="Check Out" onfocus="(this.type='date')"
-                    onblur="(this.value==''?this.type='text':this.type='date')" onchange="loadListings()" style="border: none; box-shadow: none; min-width: unset; width: 100%; flex: 1; padding: 18px 5px; background: transparent; text-align: center;">
+                    onblur="(this.value==''?this.type='text':this.type='date')" onchange="loadListings()"
+                    style="border: none; box-shadow: none; min-width: unset; width: 100%; flex: 1; padding: 18px 5px; background: transparent; text-align: center;">
             </div>
             <div class="filters-container" style="position: relative;">
                 <button class="btn-filters" onclick="toggleFilters()">
