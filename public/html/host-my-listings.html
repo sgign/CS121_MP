@@ -7,6 +7,7 @@
 </head>
 
 <body id="hostPage">
+    <div id="toastNotification" class="toast-notification"></div>
 
     <header class="headerz">
         <img src="/images/logo.png" alt="HouseHop" class="mini-logo">
@@ -88,6 +89,16 @@
     <script>
         let editingId = null;
         let uploadedImageUrls = [];
+
+        function showToast(message, isError) {
+            const toast = document.getElementById("toastNotification");
+            toast.textContent = message;
+            toast.className = "toast-notification " + (isError ? "error" : "success");
+            toast.classList.add("show");
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 4000);
+        }
 
         function previewModalImage(event) {
             const files = Array.from(event.target.files);
@@ -252,10 +263,10 @@
             if (res.ok) {
                 closeModal();
                 loadMyListings();
+                showToast(editingId ? "Listing updated successfully!" : "Listing created successfully!", false);
             } else {
                 const err = await res.json();
-                msg.textContent = err.message;
-                msg.style.color = "red";
+                showToast(err.message, true);
             }
         }
 

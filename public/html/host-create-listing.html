@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>HouseHop - Create Listing</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body id="createListingPage">
+    <div id="toastNotification" class="toast-notification"></div>
     <header>
         <h2>HouseHop</h2>
         <nav>
@@ -47,7 +50,8 @@
             <div class="input-group">
                 <label>Upload Photos (or URL)</label>
                 <input id="image" placeholder="https://..." style="margin-bottom: 5px;">
-                <input id="imageFile" type="file" multiple accept="image/*" onchange="previewImage(event)" style="font-size: 12px; margin-bottom: 5px;">
+                <input id="imageFile" type="file" multiple accept="image/*" onchange="previewImage(event)"
+                    style="font-size: 12px; margin-bottom: 5px;">
                 <div id="imageGallery" style="display:flex; flex-wrap:wrap; gap:10px; margin-top: 10px;"></div>
             </div>
             <div class="input-group">
@@ -68,14 +72,14 @@
             const gallery = document.getElementById('imageGallery');
             gallery.innerHTML = '';
             uploadedImageUrls = [];
-            
+
             if (files.length > 0) {
                 document.getElementById('image').value = ""; // Clear URL if files uploaded
             }
 
             files.forEach(file => {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const dataUrl = e.target.result;
                     uploadedImageUrls.push(dataUrl);
                     const img = document.createElement('img');
@@ -95,7 +99,7 @@
             if (finalImages.length === 0 && document.getElementById("image").value) {
                 finalImages.push(document.getElementById("image").value);
             }
-            
+
             const data = {
                 name: document.getElementById("name").value,
                 type: document.getElementById("type").value,
@@ -113,16 +117,24 @@
                 body: JSON.stringify(data)
             });
 
-            const msg = document.getElementById("formMsg");
+            const toast = document.getElementById("toastNotification");
+            function showToast(message, isError) {
+                toast.textContent = message;
+                toast.className = "toast-notification " + (isError ? "error" : "success");
+                toast.classList.add("show");
+                setTimeout(() => {
+                    toast.classList.remove("show");
+                }, 4000);
+            }
+
             if (res.ok) {
-                msg.textContent = "Listing created successfully!";
-                msg.style.color = "green";
+                showToast("Listing created successfully!", false);
             } else {
                 const err = await res.json();
-                msg.textContent = err.message;
-                msg.style.color = "red";
+                showToast(err.message, true);
             }
         }
     </script>
 </body>
+
 </html>

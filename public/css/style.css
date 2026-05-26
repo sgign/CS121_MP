@@ -1347,7 +1347,6 @@ button:hover {
 }
 
 .admin-table td {
-    padding: 18px 15px;
     text-align: center;
     border-bottom: 1px solid #edf2f7;
     font-size: 15px;
@@ -1463,3 +1462,34 @@ button:hover {
     font-size: 14px;
     background: #f9f9f9;
 }
+
+/* ===== TOAST NOTIFICATION ===== */
+.toast-notification {
+    position: fixed;
+    top: -100px; /* Hidden above screen */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.toast-notification.show {
+    top: 30px;
+    opacity: 1;
+}
+
+.toast-notification.error {
+    background: #e74c3c;
+}
+
+.toast-notification.success {
+    background: #2ecc71;
+}

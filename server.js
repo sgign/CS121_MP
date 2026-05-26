@@ -2,10 +2,12 @@ const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // ==============================
@@ -218,9 +220,31 @@ app.get("/listings/:id", isAuthenticated, async (req, res) => {
     res.json(listingObj);
 });
 
+function processImages(reqBody) {
+    const saveBase64Image = (str) => {
+        if (!str || !str.startsWith("data:image/")) return str;
+        const matches = str.match(/^data:image\/([A-Za-z-+\/]+);base64,(.+)$/);
+        if (!matches || matches.length !== 3) return str;
+        const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+        const buffer = Buffer.from(matches[2], 'base64');
+        const filename = `upload_${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
+        const filepath = path.join(__dirname, "public", "uploads", filename);
+        fs.writeFileSync(filepath, buffer);
+        return "/uploads/" + filename;
+    };
+
+    if (reqBody.image) {
+        reqBody.image = saveBase64Image(reqBody.image);
+    }
+    if (reqBody.images && Array.isArray(reqBody.images)) {
+        reqBody.images = reqBody.images.map(saveBase64Image);
+    }
+}
+
 // POST /listings — host creates listing
 app.post("/listings", isAuthenticated, requireRole("host"), async (req, res) => {
     try {
+        processImages(req.body);
         const listing = await Listing.create({
             ...req.body,
             hostId: req.session.user.id
@@ -238,6 +262,7 @@ app.put("/listings/:id", isAuthenticated, requireRole("host"), async (req, res) 
     if (listing.hostId !== req.session.user.id) {
         return res.status(403).json({ message: "Not your listing" });
     }
+    processImages(req.body);
     const updated = await Listing.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updated);
 });
@@ -401,6 +426,16 @@ app.get("/*splat", (req, res) => {
     res.sendFile(path.join(__dirname, "public/html/404.html"));
 });
 
+
+// ==============================
+// ERROR HANDLER
+// ==============================
+app.use((err, req, res, next) => {
+    if (err.type === 'entity.too.large') {
+        return res.status(413).json({ message: "File size limit exceeded! Please upload smaller images." });
+    }
+    res.status(500).json({ message: err.message || "Internal Server Error" });
+});
 
 app.listen(3000, () => {
     console.log("HouseHop running on http://localhost:3000");
