@@ -1163,6 +1163,7 @@ button:hover {
     flex-direction: column;
     justify-content: space-between;
     flex: 1;
+    min-width: 0;
 }
 
 .booking-horizontal-title {
@@ -1172,6 +1173,9 @@ button:hover {
     margin: 0 0 10px 0;
     font-family: 'Inter', sans-serif;
     line-height: 1.1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 .booking-horizontal-desc {
