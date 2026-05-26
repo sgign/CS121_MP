@@ -71,16 +71,33 @@
 
                 const bookingCode = b.bookingId || "BKG-LEGACY";
 
+                const startDateStr = new Date(b.startDate).toLocaleDateString();
+                const endDateStr = new Date(b.endDate).toLocaleDateString();
+
+                card.className = "booking-wrapper";
+                card.style.background = "#fdfaf5";
+                card.style.border = "1px solid #eee";
+                card.style.borderRadius = "12px";
+                card.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.05)";
+                card.style.overflow = "hidden";
+                card.style.cursor = "pointer";
+
                 card.innerHTML = `
-                    <img src="${imageUrl}" alt="${listing.name}">
-                    <div class="booking-horizontal-content">
-                        <div>
-                            <p style="font-size: 12px; font-weight: 700; color: #ff385c; letter-spacing: 0.5px; margin-bottom: 4px;">ID: ${bookingCode}</p>
-                            <h3 class="booking-horizontal-title">${listing.name}</h3>
-                            <p class="booking-horizontal-desc">${locationText}</p>
-                            <p class="booking-horizontal-price">${listing.price.toLocaleString()}/night</p>
+                    <div class="booking-horizontal-card" style="border: none; box-shadow: none; margin: 0; background: transparent; cursor: pointer; border-radius: 0;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        <img src="${imageUrl}" alt="${listing.name}">
+                        <div class="booking-horizontal-content">
+                            <div>
+                                <p style="font-size: 12px; font-weight: 700; color: #ff385c; letter-spacing: 0.5px; margin-bottom: 4px;">ID: ${bookingCode}</p>
+                                <h3 class="booking-horizontal-title">${listing.name}</h3>
+                                <p class="booking-horizontal-desc">${locationText}</p>
+                                <p class="booking-horizontal-price">${listing.price.toLocaleString()}/night</p>
+                            </div>
+                            <span class="badge-status ${statusClass}">REQUEST ${b.status.toUpperCase()}</span>
                         </div>
-                        <span class="badge-status ${statusClass}">REQUEST ${b.status.toUpperCase()}</span>
+                    </div>
+                    <div class="expanded-details" style="display: none; padding: 15px 20px; border-top: 1px solid #eee; background: #faf8f2; font-family: 'Inter', sans-serif; font-size: 14px;">
+                        <p style="margin: 0 0 8px 0; color: #555;"><strong>Schedule:</strong> ${startDateStr} to ${endDateStr}</p>
+                        ${b.status === 'approved' && listing.contactNumber ? `<p style="margin: 0; color: #008489;"><strong>Host Contact:</strong> ${listing.contactNumber}</p>` : `<p style="margin: 0; color: #888; font-style: italic;">Host Contact: Visible once approved</p>`}
                     </div>
                 `;
                 container.appendChild(card);
