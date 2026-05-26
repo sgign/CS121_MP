@@ -3,15 +3,16 @@
 
 <head>
     <title>HouseHop - My Listings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body id="hostPage">
     <div id="toastNotification" class="toast-notification"></div>
 
-    <header class="headerz">
-        <img src="/images/logo.png" alt="HouseHop" class="mini-logo">
-        <nav class="nav-buttons">
+    <header class="main-header">
+        <img src="/images/logo.png" alt="HouseHop" class="header-logo">
+        <nav class="main-nav">
             <a href="/my-listings">My Listings</a>
             <a href="/booking-requests">Booking Requests</a>
             <a href="/logout">Logout</a>
@@ -19,7 +20,7 @@
     </header>
 
     <main class="host-main">
-        <h1>My Listings</h1>
+        <img src="/images/my-listings.png" alt="My Listings" class="host-title-img">
 
         <div class="host-controls">
             <button class="blue-btn" onclick="openModal()">+ NEW LISTING</button>
@@ -35,7 +36,8 @@
     <div id="listingModal" class="modal-overlay" style="display:none;">
         <div class="modal-box">
             <button class="modal-close" onclick="closeModal()">✕</button>
-            <h2 id="modalTitle">New Listing</h2>
+            <img id="modalTitleImg" src="/images/new-listing.png" alt="New Listing" style="display:none; max-height: 60px; object-fit: contain; margin-bottom: 20px;">
+            <h2 id="modalTitleText" style="display:none; color: #5fa8d3; font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px;">Edit Listing</h2>
 
             <input type="hidden" id="editId">
 
@@ -198,7 +200,8 @@
         function openModal() {
             editingId = null;
             uploadedImageUrl = "";
-            document.getElementById("modalTitle").textContent = "New Listing";
+            document.getElementById("modalTitleImg").style.display = "block";
+            document.getElementById("modalTitleText").style.display = "none";
             document.getElementById("modalName").value = "";
             document.getElementById("modalLocation").value = "";
             document.getElementById("modalPrice").value = "";
@@ -215,7 +218,8 @@
         function openEdit(listing) {
             editingId = listing._id;
             uploadedImageUrl = "";
-            document.getElementById("modalTitle").textContent = "Edit Listing";
+            document.getElementById("modalTitleImg").style.display = "none";
+            document.getElementById("modalTitleText").style.display = "block";
             document.getElementById("modalName").value = listing.name;
             document.getElementById("modalLocation").value = listing.location;
             document.getElementById("modalPrice").value = listing.price;

@@ -265,6 +265,13 @@ button:hover {
     padding: 20px 60px;
 }
 
+.host-title-img {
+    display: block;
+    margin: 0 auto 30px auto;
+    max-height: 80px;
+    object-fit: contain;
+}
+
 .host-main h1 {
     text-align: center;
     font-size: 42px;

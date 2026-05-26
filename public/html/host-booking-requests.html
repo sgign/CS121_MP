@@ -3,14 +3,15 @@
 
 <head>
     <title>HouseHop - Booking Requests</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Luckiest+Guy&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body id="hostPage">
 
-    <header class="headerz">
-        <img src="/images/logo.png" alt="HouseHop" class="mini-logo">
-        <nav class="nav-buttons">
+    <header class="main-header">
+        <img src="/images/logo.png" alt="HouseHop" class="header-logo">
+        <nav class="main-nav">
             <a href="/my-listings">My Listings</a>
             <a href="/booking-requests">Booking Requests</a>
             <a href="/logout">Logout</a>
@@ -18,7 +19,7 @@
     </header>
 
     <main class="host-main">
-        <h1>Booking Requests</h1>
+        <img src="/images/booking-requests.png" alt="Booking Requests" class="host-title-img">
 
         <div class="host-controls centered">
             <input id="searchRequests" placeholder="Search by name" oninput="loadRequests()">
