@@ -186,14 +186,35 @@ app.get("/listings", isAuthenticated, async (req, res) => {
     if (sort === "price_desc") sortObj.price = -1;
 
     const listings = await Listing.find(query).sort(sortObj);
-    res.json(listings);
+    
+    let result = listings.map(l => l.toObject());
+    if (req.session.user.role === "guest") {
+        result.forEach(r => r.contactNumber = undefined);
+    }
+    
+    res.json(result);
 });
 
 // GET /listings/:id
 app.get("/listings/:id", isAuthenticated, async (req, res) => {
     const listing = await Listing.findById(req.params.id);
     if (!listing) return res.status(404).json({ message: "Listing not found" });
-    res.json(listing);
+
+    let listingObj = listing.toObject();
+
+    if (req.session.user.role === "guest") {
+        const approvedBooking = await Booking.findOne({
+            listingId: listing._id,
+            guestId: req.session.user.id,
+            status: "approved"
+        });
+
+        if (!approvedBooking) {
+            listingObj.contactNumber = undefined;
+        }
+    }
+
+    res.json(listingObj);
 });
 
 // POST /listings — host creates listing
