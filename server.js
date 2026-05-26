@@ -198,11 +198,15 @@ app.get("/listings/:id", isAuthenticated, async (req, res) => {
 
 // POST /listings — host creates listing
 app.post("/listings", isAuthenticated, requireRole("host"), async (req, res) => {
-    const listing = await Listing.create({
-        ...req.body,
-        hostId: req.session.user.id
-    });
-    res.json(listing);
+    try {
+        const listing = await Listing.create({
+            ...req.body,
+            hostId: req.session.user.id
+        });
+        res.json(listing);
+    } catch (err) {
+        res.status(400).json({ message: "Failed to create listing: " + err.message });
+    }
 });
 
 // PUT /listings/:id — host edits own listing
