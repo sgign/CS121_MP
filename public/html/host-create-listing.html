@@ -41,7 +41,7 @@
             </div>
             <div class="input-group">
                 <label>Price per Night (₱)</label>
-                <input id="price" type="number" placeholder="e.g. 1500">
+                <input id="price" type="text" oninput="validatePriceInput(this)" placeholder="e.g. 1500">
             </div>
             <div class="input-group">
                 <label>Description</label>
@@ -56,7 +56,7 @@
             </div>
             <div class="input-group">
                 <label>Contact Number</label>
-                <input id="contactNumber" placeholder="e.g. 09171234567">
+                <input id="contactNumber" oninput="validateContactInput(this)" placeholder="e.g. 09171234567">
             </div>
 
             <button onclick="createListing()">CREATE LISTING</button>
@@ -94,7 +94,47 @@
             });
         }
 
+        let toastTimeout;
+        function showToast(message, isError) {
+            const toast = document.getElementById("toastNotification");
+            if (!toast) return;
+            toast.textContent = message;
+            toast.className = "toast-notification " + (isError ? "error" : "success");
+            toast.classList.add("show");
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 4000);
+        }
+
+        function validatePriceInput(input) {
+            if (/[^0-9]/.test(input.value)) {
+                showToast("Price should consist of numbers only.", true);
+                input.value = input.value.replace(/[^0-9]/g, '');
+            }
+        }
+
+        function validateContactInput(input) {
+            if (/[^0-9]/.test(input.value)) {
+                showToast("Contact number should consist of numbers only.", true);
+                input.value = input.value.replace(/[^0-9]/g, '');
+            }
+        }
+
         async function createListing() {
+            const priceVal = document.getElementById("price").value;
+            if (/[^0-9]/.test(priceVal) || priceVal === "") {
+                showToast("Price should consist of valid numbers only.", true);
+                return;
+            }
+
+            const contactNum = document.getElementById("contactNumber").value;
+            if (/[^0-9]/.test(contactNum)) {
+                showToast("Contact number should consist of numbers only.", true);
+                return;
+            }
+
             let finalImages = [...uploadedImageUrls];
             if (finalImages.length === 0 && document.getElementById("image").value) {
                 finalImages.push(document.getElementById("image").value);
@@ -116,16 +156,6 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             });
-
-            const toast = document.getElementById("toastNotification");
-            function showToast(message, isError) {
-                toast.textContent = message;
-                toast.className = "toast-notification " + (isError ? "error" : "success");
-                toast.classList.add("show");
-                setTimeout(() => {
-                    toast.classList.remove("show");
-                }, 4000);
-            }
 
             if (res.ok) {
                 showToast("Listing created successfully!", false);

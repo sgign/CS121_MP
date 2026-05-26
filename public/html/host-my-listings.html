@@ -51,7 +51,7 @@
                 </div>
                 <div class="modal-field">
                     <label>Price per Night</label>
-                    <input id="modalPrice" type="number" placeholder="e.g. 3000">
+                    <input id="modalPrice" type="text" oninput="validatePriceInput(this)" placeholder="e.g. 3000">
                 </div>
                 <div class="modal-field">
                     <label>Type</label>
@@ -71,7 +71,7 @@
                 </div>
                 <div class="modal-field">
                     <label>Contact Number</label>
-                    <input id="modalContact" placeholder="e.g. 09171234567">
+                    <input id="modalContact" oninput="validateContactInput(this)" placeholder="e.g. 09171234567">
                     <label style="margin-top:15px;">Upload Photos (or URL)</label>
                     <input id="modalImage" placeholder="https://..." style="margin-bottom: 5px;">
                     <input id="modalImageFile" type="file" multiple accept="image/*" onchange="previewModalImage(event)" style="font-size: 12px; margin-bottom: 5px;">
@@ -89,6 +89,20 @@
     <script>
         let editingId = null;
         let uploadedImageUrls = [];
+
+        function validateContactInput(input) {
+            if (/[^0-9]/.test(input.value)) {
+                showToast("Contact number should consist of numbers only.", true);
+                input.value = input.value.replace(/[^0-9]/g, '');
+            }
+        }
+
+        function validatePriceInput(input) {
+            if (/[^0-9]/.test(input.value)) {
+                showToast("Price should consist of numbers only.", true);
+                input.value = input.value.replace(/[^0-9]/g, '');
+            }
+        }
 
         function showToast(message, isError) {
             const toast = document.getElementById("toastNotification");
@@ -234,6 +248,18 @@
         }
 
         async function submitListing() {
+            const priceVal = document.getElementById("modalPrice").value;
+            if (/[^0-9]/.test(priceVal) || priceVal === "") {
+                showToast("Price should consist of valid numbers only.", true);
+                return;
+            }
+
+            const contactNum = document.getElementById("modalContact").value;
+            if (/[^0-9]/.test(contactNum)) {
+                showToast("Contact number should consist of numbers only.", true);
+                return;
+            }
+
             let finalImages = [...uploadedImageUrls];
             if (finalImages.length === 0 && document.getElementById("modalImage").value) {
                 finalImages.push(document.getElementById("modalImage").value);
