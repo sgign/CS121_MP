@@ -107,9 +107,13 @@
                 const start = new Date(b.startDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
                 const end = new Date(b.endDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
                 
-                // Find host name
-                const hostUser = allUsers.find(u => String(u.id) === String(b.listingId.hostId));
-                const hostName = hostUser ? hostUser.username : b.listingId.hostId;
+                // Find host name securely in case listing was deleted
+                const listingName = b.listingId ? b.listingId.name : "Deleted Listing";
+                let hostName = "Unknown";
+                if (b.listingId && b.listingId.hostId) {
+                    const hostUser = allUsers.find(u => String(u.id) === String(b.listingId.hostId));
+                    hostName = hostUser ? hostUser.username : b.listingId.hostId;
+                }
                 
                 const bookingCode = b.bookingId || "BKG-LEGACY";
                 const statusStr = b.status.toUpperCase();
@@ -117,7 +121,7 @@
 
                 tr.innerHTML = `
                     <td><strong>${bookingCode}</strong></td>
-                    <td><strong>${b.listingId.name}</strong></td>
+                    <td><strong>${listingName}</strong></td>
                     <td>${hostName || 'Unknown'}</td>
                     <td>${b.guestUsername}</td>
                     <td>${start} -<br>${end}</td>
