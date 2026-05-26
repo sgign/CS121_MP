@@ -40,6 +40,7 @@
                 const start = new Date(b.startDate).toLocaleDateString();
                 const end = new Date(b.endDate).toLocaleDateString();
                 card.innerHTML = `
+                    <p style="font-size: 12px; font-weight: bold; color: #ff385c; margin-bottom: 5px;">ID: ${b.bookingId || 'BKG-LEGACY'}</p>
                     <p><strong>${b.listingId.name}</strong> (${b.listingId.location})</p>
                     <p>Guest: ${b.guestUsername}</p>
                     <p>Dates: ${start} → ${end}</p>

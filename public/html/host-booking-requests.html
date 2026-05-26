@@ -78,6 +78,7 @@
                     <div class="request-info">
                         ${b.status === "pending" ? `<span class="pending-dot">● PENDING</span>` : ""}
                         <h3>${b.listingId.name}</h3>
+                        <p style="font-size: 12px; font-weight: bold; color: #ff385c; margin-bottom: 5px;">ID: ${b.bookingId || 'BKG-LEGACY'}</p>
                         <p>Dates: ${start} to ${end}</p>
                         <p>Guest: ${b.guestUsername}</p>
                         <div class="card-actions">${actionHtml}</div>
