@@ -289,7 +289,7 @@ app.get("/bookings/my", isAuthenticated, requireRole("guest"), async (req, res) 
 
     const result = bookings.map(b => {
         const obj = b.toObject();
-        if (b.status !== "approved") {
+        if (b.status !== "approved" && obj.listingId) {
             obj.listingId.contactNumber = undefined;
         }
         return obj;
