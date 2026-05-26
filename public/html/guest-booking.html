@@ -230,7 +230,7 @@
                 guest_room: "Guest Room"
             };
             document.getElementById("listingType").textContent = typeLabels[l.type] || l.type || "N/A";
-            document.getElementById("listingContact").textContent = l.contactNumber || "N/A";
+            document.getElementById("listingContact").textContent = l.contactNumber || "Visible once booking is approved";
         }
 
         async function submitBooking() {
