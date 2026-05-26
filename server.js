@@ -187,12 +187,12 @@ app.get("/listings", isAuthenticated, async (req, res) => {
     if (sort === "price_desc") sortObj.price = -1;
 
     const listings = await Listing.find(query).sort(sortObj);
-    
+
     let result = listings.map(l => l.toObject());
     if (req.session.user.role === "guest") {
         result.forEach(r => r.contactNumber = undefined);
     }
-    
+
     res.json(result);
 });
 
