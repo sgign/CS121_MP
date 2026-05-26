@@ -158,7 +158,7 @@
                     <td><strong>${l.name}</strong></td>
                     <td>${hostName}</td>
                     <td>${typeLabels[l.type] || l.type}</td>
-                    <td>${l.price.toLocaleString()} for<br>x nights</td>
+                    <td>₱${l.price.toLocaleString()}/night</td>
                     <td><span class="admin-badge ${statusClass}">${statusStr}</span></td>
                     <td>
                         <button class="action-btn" onclick="deleteListing('${l._id}')" title="Delete Listing">🗑️</button>
