@@ -311,7 +311,7 @@ app.get("/bookings/host", isAuthenticated, requireRole("host"), async (req, res)
     const listings = await Listing.find({ hostId: req.session.user.id });
     const listingIds = listings.map(l => l._id);
     const bookings = await Booking.find({ listingId: { $in: listingIds } })
-        .populate("listingId", "name location image");
+        .populate("listingId", "name location image type price");
 
     const result = bookings.map(b => {
         const obj = b.toObject();
