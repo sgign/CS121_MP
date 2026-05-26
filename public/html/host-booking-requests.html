@@ -21,23 +21,61 @@
     <main class="host-main">
         <img src="/images/booking-requests.png" alt="Booking Requests" class="host-title-img">
 
-        <div class="host-controls centered">
-            <input id="searchRequests" placeholder="Search by name" oninput="loadRequests()">
-            <select id="filterStatus" onchange="loadRequests()">
-                <option value="">STATUS</option>
-                <option value="pending">Pending</option>
+        <div class="controls browse-controls" style="justify-content: center; max-width: 100%; margin: 0 auto 50px auto; gap: 15px;">
+            <input id="searchRequests" placeholder="Search by name" oninput="loadRequests()" style="flex: unset; width: 220px; border-radius: 40px; padding: 12px 20px; font-size: 14px; outline: none; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+            
+            <select id="filterStatus" onchange="loadRequests()" class="btn-filters" style="width: auto; padding: 12px 40px 12px 24px; font-size: 14px; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px center; background-size: 10px auto;">
+                <option value="">All Statuses</option>
                 <option value="approved">Approved</option>
+                <option value="pending">Pending</option>
                 <option value="rejected">Rejected</option>
             </select>
+
+            <div class="filters-container" style="position: relative;">
+                <button class="btn-filters" onclick="toggleFilters()" style="padding: 12px 24px; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                    <img src="/images/filter-icon.png" alt="Filter" style="width: 18px; height: 18px; object-fit: contain;">
+                    FILTERS
+                </button>
+                <div id="filterDropdown" class="filter-dropdown" style="display:none;">
+                    <div class="filter-group">
+                        <select id="filterType" onchange="loadRequests()">
+                            <option value="">Type</option>
+                            <option value="hotel">Hotel</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="dorm">Dorm</option>
+                            <option value="guest_room">Guest Room</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <select id="filterSort" onchange="loadRequests()">
+                            <option value="">Price</option>
+                            <option value="price_asc">Ascending</option>
+                            <option value="price_desc">Descending</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="requestsGrid"></div>
     </main>
 
     <script>
+        function toggleFilters() {
+            const dropdown = document.getElementById('filterDropdown');
+            const btn = document.querySelector('.btn-filters:nth-child(3) button');
+            if (dropdown.style.display === 'none') {
+                dropdown.style.display = 'flex';
+            } else {
+                dropdown.style.display = 'none';
+            }
+        }
+
         async function loadRequests() {
             const search = document.getElementById("searchRequests").value.toLowerCase();
             const filterStatus = document.getElementById("filterStatus").value;
+            const filterType = document.getElementById("filterType") ? document.getElementById("filterType").value : "";
+            const filterSort = document.getElementById("filterSort") ? document.getElementById("filterSort").value : "";
 
             const res = await fetch("/bookings/host");
             const bookings = await res.json();
@@ -45,9 +83,16 @@
 
             const filtered = bookings.filter(b => {
                 const matchName = b.listingId.name.toLowerCase().includes(search);
-                const matchStatus = filterStatus === "" || b.status === filterStatus;
-                return matchName && matchStatus;
+                const matchStatus = filterStatus === "" || filterStatus === "all" || b.status === filterStatus;
+                const matchType = filterType === "" || b.listingId.type === filterType;
+                return matchName && matchStatus && matchType;
             });
+            
+            if (filterSort === "price_asc") {
+                filtered.sort((a, b) => a.listingId.price - b.listingId.price);
+            } else if (filterSort === "price_desc") {
+                filtered.sort((a, b) => b.listingId.price - a.listingId.price);
+            }
 
             const grid = document.getElementById("requestsGrid");
             grid.innerHTML = "";
