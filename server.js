@@ -240,31 +240,9 @@ app.get("/listings/:id", isAuthenticated, async (req, res) => {
     res.json(listingObj);
 });
 
-function processImages(reqBody) {
-    const saveBase64Image = (str) => {
-        if (!str || !str.startsWith("data:image/")) return str;
-        const matches = str.match(/^data:image\/([A-Za-z-+\/]+);base64,(.+)$/);
-        if (!matches || matches.length !== 3) return str;
-        const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
-        const buffer = Buffer.from(matches[2], 'base64');
-        const filename = `upload_${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
-        const filepath = path.join(__dirname, "public", "uploads", filename);
-        fs.writeFileSync(filepath, buffer);
-        return "/uploads/" + filename;
-    };
-
-    if (reqBody.image) {
-        reqBody.image = saveBase64Image(reqBody.image);
-    }
-    if (reqBody.images && Array.isArray(reqBody.images)) {
-        reqBody.images = reqBody.images.map(saveBase64Image);
-    }
-}
-
-// POST /listings — host creates listing
+// Image processing removed so Base64 strings are stored directly in MongoDB
 app.post("/listings", isAuthenticated, requireRole("host"), async (req, res) => {
     try {
-        processImages(req.body);
         const listing = await Listing.create({
             ...req.body,
             hostId: req.session.user.id
@@ -282,7 +260,6 @@ app.put("/listings/:id", isAuthenticated, requireRole("host"), async (req, res) 
     if (listing.hostId !== req.session.user.id) {
         return res.status(403).json({ message: "Not your listing" });
     }
-    processImages(req.body);
     const updated = await Listing.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updated);
 });
