@@ -109,8 +109,7 @@
                 card.className = "browse-card";
                 card.onclick = () => window.location.href = "/booking/" + l._id;
 
-                const dummyDesc = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-                const desc = l.description ? l.description : dummyDesc;
+                const desc = l.description ? l.description : "";
 
                 card.innerHTML = `
                     <div class="card-img-wrapper">
