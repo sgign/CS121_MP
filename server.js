@@ -229,7 +229,8 @@ app.get("/listings/:id", isAuthenticated, async (req, res) => {
         const approvedBooking = await Booking.findOne({
             listingId: listing._id,
             guestId: req.session.user.id,
-            status: "approved"
+            status: "approved",
+            endDate: { $gte: new Date() }
         });
 
         if (!approvedBooking) {
@@ -289,8 +290,13 @@ app.get("/bookings/my", isAuthenticated, requireRole("guest"), async (req, res) 
 
     const result = bookings.map(b => {
         const obj = b.toObject();
-        if (b.status !== "approved" && obj.listingId) {
-            obj.listingId.contactNumber = undefined;
+        if (obj.listingId) {
+            const isApproved = b.status === "approved";
+            const isPastBooking = new Date(b.endDate) < new Date();
+            
+            if (!isApproved || isPastBooking) {
+                obj.listingId.contactNumber = undefined;
+            }
         }
         return obj;
     });

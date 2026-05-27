@@ -115,9 +115,11 @@
                 const start = new Date(b.startDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
                 const end = new Date(b.endDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
 
-                // Find host name
-                const hostUser = allUsers.find(u => String(u.id) === String(b.listingId.hostId));
-                const hostName = hostUser ? hostUser.username : b.listingId.hostId;
+                // Find host name and listing name safely
+                const hostId = b.listingId ? b.listingId.hostId : null;
+                const hostUser = hostId ? allUsers.find(u => String(u.id) === String(hostId)) : null;
+                const hostName = hostUser ? hostUser.username : (hostId || 'Unknown');
+                const listingName = b.listingId ? b.listingId.name : 'Unknown Listing';
 
                 const bookingCode = b.bookingId || "BKG-LEGACY";
                 const statusStr = b.status.toUpperCase();
