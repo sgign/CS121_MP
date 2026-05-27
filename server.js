@@ -397,7 +397,6 @@ app.post("/bookings", isAuthenticated, requireRole("guest"), async (req, res) =>
         return res.status(400).json({ message: "End date must be after start date" });
     }
 
-    // Prevent overlapping approved bookings
     const overlap = await Booking.findOne({
         listingId,
         status: "approved",
@@ -405,7 +404,11 @@ app.post("/bookings", isAuthenticated, requireRole("guest"), async (req, res) =>
     });
 
     if (overlap) {
-        return res.status(409).json({ message: "These dates overlap with an existing approved booking" });
+        return res.status(409).json({ 
+            message: "These dates overlap with an existing approved booking.",
+            overlapStart: overlap.startDate,
+            overlapEnd: overlap.endDate
+        });
     }
 
     let isUnique = false;

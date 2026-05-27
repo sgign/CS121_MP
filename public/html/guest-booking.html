@@ -185,10 +185,13 @@
     <div id="bookingUnavailableModal" class="modal-overlay"
         style="display: none; align-items: center; justify-content: center; z-index: 2000;">
         <div class="modal-box"
-            style="background: #fff; max-width: 400px; text-align: center; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            style="background: #fff; max-width: 450px; text-align: center; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
             <div style="font-size: 60px; margin-bottom: 15px;">🚫</div>
             <h2 style="color: #e07070; font-size: 24px; font-weight: 800; margin-bottom: 15px; margin-top: 0;">UNAVAILABLE</h2>
-            <p style="font-size: 16px; color: #666; margin-bottom: 30px; line-height: 1.4;">The listing is unavailable for the selected dates because there is an approved booking already.</p>
+            <p style="font-size: 16px; color: #666; margin-bottom: 30px; line-height: 1.4;">
+                The listing is unavailable for the selected dates.<br><br>
+                <strong id="unavailableDatesText" style="color: #e07070;"></strong>
+            </p>
             <button onclick="document.getElementById('bookingUnavailableModal').style.display='none'"
                 style="background: transparent; border: 2px solid #e07070; color: #e07070; padding: 12px 25px; border-radius: 50px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s;">TRY DIFFERENT DATES</button>
         </div>
@@ -283,6 +286,14 @@
                 document.getElementById('bookingSuccessModal').style.display = 'flex';
                 msg.textContent = "";
             } else if (res.status === 409) {
+                if (data.overlapStart && data.overlapEnd) {
+                    const opts = { month: 'short', day: 'numeric', year: 'numeric' };
+                    const oStart = new Date(data.overlapStart).toLocaleDateString(undefined, opts);
+                    const oEnd = new Date(data.overlapEnd).toLocaleDateString(undefined, opts);
+                    document.getElementById('unavailableDatesText').textContent = `Conflicts with an existing booking from ${oStart} to ${oEnd}`;
+                } else {
+                    document.getElementById('unavailableDatesText').textContent = "There is an approved booking for these dates already.";
+                }
                 document.getElementById('bookingUnavailableModal').style.display = 'flex';
                 msg.textContent = "";
             } else {
