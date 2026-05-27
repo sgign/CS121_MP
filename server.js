@@ -471,7 +471,15 @@ app.put("/bookings/:id/status", isAuthenticated, requireRole("host"), async (req
 app.get("/admin/users-list", isAuthenticated, requireRole("admin"), async (req, res) => {
     // Return users from DB without passwords
     const users = await User.find({}, { password: 0 });
-    const safe = users.map(u => ({ id: u._id.toString(), username: u.username, role: u.role }));
+    const safe = users.map(u => {
+        const isHardcoded = ["admin", "guest", "host"].includes(u.username);
+        return { 
+            id: u._id.toString(), 
+            username: u.username, 
+            role: u.role,
+            joinDate: isHardcoded ? "N/A" : u._id.getTimestamp().toLocaleDateString()
+        };
+    });
     res.json(safe);
 });
 
