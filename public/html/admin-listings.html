@@ -77,8 +77,29 @@
         </div>
     </main>
 
+    <!-- Deletion Reason Modal -->
+    <div id="deleteReasonModal" class="modal-overlay"
+        style="display: none; align-items: center; justify-content: center; z-index: 2000;">
+        <div class="modal-box"
+            style="background: #fff; max-width: 450px; text-align: center; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 100%;">
+            <div style="font-size: 50px; margin-bottom: 15px;">⚠️</div>
+            <h2 style="color: #333; font-size: 24px; font-weight: 800; margin-bottom: 15px; margin-top: 0;">DELETE LISTING</h2>
+            <p style="font-size: 15px; color: #666; margin-bottom: 20px; line-height: 1.4;">
+                Please enter a reason for deleting this listing. This will be shown to the host.
+            </p>
+            <input type="text" id="deleteReasonInput" placeholder="Reason for deletion..." style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 25px; font-family: Inter; font-size: 14px; box-sizing: border-box;">
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button id="cancelDeleteBtn"
+                    style="background: #f1f1f1; border: none; color: #555; padding: 12px 25px; border-radius: 50px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s;">CANCEL</button>
+                <button id="confirmDeleteBtn"
+                    style="background: #d9534f; border: none; color: white; padding: 12px 25px; border-radius: 50px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s;">DELETE</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let allUsers = [];
+        let listingToDeleteId = null;
 
         function toggleFilters() {
             const dropdown = document.getElementById('filterDropdown');
@@ -139,25 +160,54 @@
                 const hostUser = allUsers.find(u => String(u.id) === String(l.hostId));
                 const hostName = hostUser ? hostUser.username : l.hostId;
 
+                const isDeleted = l.status === 'deleted';
+                const rowClass = isDeleted ? 'style="opacity: 0.6; background-color: #f9f9f9;"' : '';
+                const nameDisplay = isDeleted ? `<strong>${l.name}</strong> <br><span style="color:#d9534f; font-size:11px; font-weight:bold; letter-spacing:0.5px;">DELETED BY ADMIN</span>` : `<strong>${l.name}</strong>`;
+                const actionBtn = isDeleted ? `<button class="action-btn" disabled style="opacity: 0.5; cursor: not-allowed;" title="Already Deleted">🗑️</button>` : `<button class="action-btn" onclick="deleteListing('${l._id}')" title="Delete Listing">🗑️</button>`;
+
                 tr.innerHTML = `
-                    <td><img src="${imageUrl}" alt="${l.name}"></td>
-                    <td><strong>${l.name}</strong></td>
-                    <td>${hostName}</td>
-                    <td>${typeLabels[l.type] || l.type}</td>
-                    <td>₱${l.price.toLocaleString()}/night</td>
-                    <td>
-                        <button class="action-btn" onclick="deleteListing('${l._id}')" title="Delete Listing">🗑️</button>
+                    <td ${rowClass}><img src="${imageUrl}" alt="${l.name}"></td>
+                    <td ${rowClass}>${nameDisplay}</td>
+                    <td ${rowClass}>${hostName}</td>
+                    <td ${rowClass}>${typeLabels[l.type] || l.type}</td>
+                    <td ${rowClass}>₱${l.price.toLocaleString()}/night</td>
+                    <td ${rowClass}>
+                        ${actionBtn}
                     </td>
                 `;
                 container.appendChild(tr);
             });
         }
 
-        async function deleteListing(id) {
-            if (!confirm("Delete this listing?")) return;
-            await fetch("/listings/" + id, { method: "DELETE" });
-            loadListings();
+        function deleteListing(id) {
+            listingToDeleteId = id;
+            document.getElementById("deleteReasonInput").value = "";
+            document.getElementById("deleteReasonModal").style.display = "flex";
+            document.getElementById("deleteReasonInput").focus();
         }
+
+        document.getElementById("cancelDeleteBtn").addEventListener("click", () => {
+            document.getElementById("deleteReasonModal").style.display = "none";
+            listingToDeleteId = null;
+        });
+
+        document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
+            if (!listingToDeleteId) return;
+            const reason = document.getElementById("deleteReasonInput").value.trim();
+            if (!reason) {
+                alert("Please enter a reason.");
+                return;
+            }
+
+            document.getElementById("deleteReasonModal").style.display = "none";
+            
+            await fetch("/listings/" + listingToDeleteId, { 
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ reason })
+            });
+            loadListings();
+        });
 
         init();
     </script>

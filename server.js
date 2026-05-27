@@ -47,6 +47,8 @@ const listingSchema = new mongoose.Schema({
     images: [{ type: String }],
     hostId: { type: String, required: true },
     contactNumber: { type: String, required: true },
+    status: { type: String, enum: ["active", "deleted"], default: "active" },
+    deleteReason: { type: String },
     createdAt: { type: Date, default: Date.now }
 });
 const Listing = mongoose.model("Listing", listingSchema);
@@ -58,7 +60,7 @@ const bookingSchema = new mongoose.Schema({
     guestId: { type: String, required: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
-    status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
+    status: { type: String, enum: ["pending", "approved", "rejected", "cancelled"], default: "pending" },
     createdAt: { type: Date, default: Date.now }
 });
 const Booking = mongoose.model("Booking", bookingSchema);
@@ -231,6 +233,11 @@ app.get("/listings", isAuthenticated, async (req, res) => {
     const { search, location, type, sort, checkin, checkout } = req.query;
 
     let query = {};
+    
+    // Guests only see active listings
+    if (req.session.user.role === "guest") {
+        query.status = { $ne: "deleted" };
+    }
     if (search) query.name = { $regex: search, $options: "i" };
     if (location) query.location = { $regex: location, $options: "i" };
     if (type) query.type = type;
@@ -316,13 +323,25 @@ app.delete("/listings/:id", isAuthenticated, requireRole("host", "admin"), async
     const listing = await Listing.findById(req.params.id);
     if (!listing) return res.status(404).json({ message: "Listing not found" });
 
-    if (req.session.user.role === "host" && listing.hostId !== req.session.user.id) {
-        return res.status(403).json({ message: "Not your listing" });
+    if (req.session.user.role === "admin") {
+        // Soft delete by admin
+        const { reason } = req.body || {};
+        listing.status = "deleted";
+        listing.deleteReason = reason || "Violated platform guidelines.";
+        await listing.save();
+        await Booking.updateMany({ listingId: req.params.id }, { status: "cancelled" });
+        return res.json({ message: "Listing marked as deleted" });
     }
 
-    await Listing.findByIdAndDelete(req.params.id);
-    await Booking.deleteMany({ listingId: req.params.id });
-    res.json({ message: "Deleted" });
+    if (req.session.user.role === "host") {
+        if (listing.hostId !== req.session.user.id) {
+            return res.status(403).json({ message: "Not your listing" });
+        }
+        // Hard delete by host
+        await Listing.findByIdAndDelete(req.params.id);
+        await Booking.updateMany({ listingId: req.params.id }, { status: "cancelled" });
+        return res.json({ message: "Deleted" });
+    }
 });
 
 
