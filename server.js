@@ -275,6 +275,7 @@ app.delete("/listings/:id", isAuthenticated, requireRole("host", "admin"), async
     }
 
     await Listing.findByIdAndDelete(req.params.id);
+    await Booking.deleteMany({ listingId: req.params.id });
     res.json({ message: "Deleted" });
 });
 
