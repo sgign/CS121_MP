@@ -100,7 +100,7 @@
 
             const filteredUsers = users.filter(u => {
                 const matchesSearch = u.username.toLowerCase().includes(searchTerm);
-                const matchesStatus = statusFilter === "" || (u.status && u.status === statusFilter);
+                const matchesStatus = statusFilter === "" || (u.status && u.status === statusFilter) || (!u.status && statusFilter === "active");
                 const matchesRole = roleFilter === "" || u.role === roleFilter;
                 return matchesSearch && matchesStatus && matchesRole;
             });
