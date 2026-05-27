@@ -65,13 +65,31 @@ const Booking = mongoose.model("Booking", bookingSchema);
 
 
 // ==============================
-// HARDCODED USERS (like Campus Connect)
+// USER SCHEMA & INIT
 // ==============================
-const USERS = [
-    { id: "1", username: "admin", password: "123", role: "admin" },
-    { id: "2", username: "host", password: "123", role: "host" },
-    { id: "3", username: "guest", password: "123", role: "guest" },
-];
+const userSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    role: { type: String, enum: ["guest", "host", "admin"], required: true }
+});
+const User = mongoose.model("User", userSchema);
+
+async function initUsers() {
+    try {
+        const count = await User.countDocuments();
+        if (count === 0) {
+            await User.insertMany([
+                { username: "admin", password: "123", role: "admin" },
+                { username: "host", password: "123", role: "host" },
+                { username: "guest", password: "123", role: "guest" },
+            ]);
+            console.log("Initialized default users");
+        }
+    } catch (err) {
+        console.error("Error initializing users:", err);
+    }
+}
+initUsers();
 
 
 // ==============================
@@ -102,14 +120,42 @@ app.get("/login", (req, res) => {
     res.sendFile(path.join(__dirname, "public/html/login.html"));
 });
 
-// Login POST — checks against hardcoded USERS
-app.post("/login", (req, res) => {
+// Login POST — checks against DB
+app.post("/login", async (req, res) => {
     const { username, password } = req.body;
-    const user = USERS.find(u => u.username === username && u.password === password);
+    const user = await User.findOne({ username, password });
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-    req.session.user = { id: user.id, username: user.username, role: user.role };
+    req.session.user = { id: user._id.toString(), username: user.username, role: user.role };
     res.json({ role: user.role });
+});
+
+// Signup page
+app.get("/signup", (req, res) => {
+    res.sendFile(path.join(__dirname, "public/html/signup.html"));
+});
+
+// Signup POST
+app.post("/signup", async (req, res) => {
+    const { username, password, role } = req.body;
+    if (!username || !password || !role) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+    if (!["guest", "host"].includes(role)) {
+        return res.status(400).json({ message: "Invalid role" });
+    }
+    
+    try {
+        const existing = await User.findOne({ username });
+        if (existing) {
+            return res.status(409).json({ message: "Username already exists" });
+        }
+        
+        await User.create({ username, password, role });
+        res.json({ message: "Account created successfully" });
+    } catch (err) {
+        res.status(500).json({ message: "Error creating account" });
+    }
 });
 
 // Logout
@@ -305,16 +351,18 @@ app.get("/bookings/my", isAuthenticated, requireRole("guest"), async (req, res) 
     res.json(result);
 });
 
-// GET /bookings/host -- host sees bookings for their listings
 app.get("/bookings/host", isAuthenticated, requireRole("host"), async (req, res) => {
     const listings = await Listing.find({ hostId: req.session.user.id });
     const listingIds = listings.map(l => l._id);
     const bookings = await Booking.find({ listingId: { $in: listingIds } })
         .populate("listingId", "name location image type price");
 
+    const validUserIds = bookings.map(b => b.guestId).filter(id => mongoose.Types.ObjectId.isValid(id));
+    const users = await User.find({ _id: { $in: validUserIds } });
+
     const result = bookings.map(b => {
         const obj = b.toObject();
-        const user = USERS.find(u => u.id === b.guestId);
+        const user = users.find(u => u._id.toString() === b.guestId);
         obj.guestUsername = user ? user.username : "Unknown";
         return obj;
     });
@@ -325,9 +373,13 @@ app.get("/bookings/host", isAuthenticated, requireRole("host"), async (req, res)
 // GET /bookings/all -- admin sees all bookings
 app.get("/bookings/all", isAuthenticated, requireRole("admin"), async (req, res) => {
     const bookings = await Booking.find().populate("listingId", "name location image hostId");
+    
+    const validUserIds = bookings.map(b => b.guestId).filter(id => mongoose.Types.ObjectId.isValid(id));
+    const users = await User.find({ _id: { $in: validUserIds } });
+
     const result = bookings.map(b => {
         const obj = b.toObject();
-        const user = USERS.find(u => u.id === b.guestId);
+        const user = users.find(u => u._id.toString() === b.guestId);
         obj.guestUsername = user ? user.username : "Unknown";
         return obj;
     });
@@ -416,9 +468,10 @@ app.put("/bookings/:id/status", isAuthenticated, requireRole("host"), async (req
 // ==============================
 // ADMIN USER LIST
 // ==============================
-app.get("/admin/users-list", isAuthenticated, requireRole("admin"), (req, res) => {
-    // Return hardcoded users without passwords
-    const safe = USERS.map(({ password, ...u }) => u);
+app.get("/admin/users-list", isAuthenticated, requireRole("admin"), async (req, res) => {
+    // Return users from DB without passwords
+    const users = await User.find({}, { password: 0 });
+    const safe = users.map(u => ({ id: u._id.toString(), username: u.username, role: u.role }));
     res.json(safe);
 });
 

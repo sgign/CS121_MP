@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HouseHop - Sign Up</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/images/househop-tab-icon.png">
+</head>
+
+<body id="loginPage">
+
+    <div class="login-container">
+        <img src="/images/logo.png" alt="HouseHop" class="logo">
+        <p class="tagline">Join our community!</p>
+
+        <div class="input-group">
+            <input id="username" placeholder="Username">
+        </div>
+        <div class="input-group">
+            <input id="password" type="password" placeholder="Password">
+        </div>
+        <div class="input-group role-group">
+            <label class="role-label"><input type="radio" name="role" value="guest" checked> Guest</label>
+            <label class="role-label"><input type="radio" name="role" value="host"> Host</label>
+        </div>
+
+        <button class="login-button" onclick="signup()">SIGN UP</button>
+        <p style="text-align: center; margin-top: 10px; color: #555;">
+            Already have an account? <a href="/login" style="color: #5fa8d3; text-decoration: none; font-weight: bold;">Login</a>
+        </p>
+        <p id="signupMsg"></p>
+    </div>
+
+    <script>
+        async function signup() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const role = document.querySelector('input[name="role"]:checked').value;
+
+            if (!username || !password) {
+                document.getElementById("signupMsg").textContent = "Please fill in all fields.";
+                document.getElementById("signupMsg").style.color = "red";
+                return;
+            }
+
+            const res = await fetch("/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password, role })
+            });
+
+            if (res.ok) {
+                document.getElementById("signupMsg").textContent = "Account created successfully! Redirecting...";
+                document.getElementById("signupMsg").style.color = "green";
+                setTimeout(() => window.location.href = "/login", 1500);
+            } else {
+                const data = await res.json();
+                document.getElementById("signupMsg").textContent = data.message || "Signup failed.";
+                document.getElementById("signupMsg").style.color = "red";
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -228,6 +228,33 @@ button:hover {
     box-shadow: 0 0 8px rgba(100, 160, 210, 0.3);
 }
 
+#loginPage input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin: 0;
+    margin-right: 8px;
+    accent-color: #5fa8d3;
+    border-radius: 50%;
+}
+
+.role-group {
+    flex-direction: row !important;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 10px;
+    margin-bottom: 25px !important;
+}
+
+.role-label {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+    font-weight: 500;
+}
+
 .login-button {
     margin-top: 10px;
     width: 200px;
